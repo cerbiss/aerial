@@ -1062,13 +1062,18 @@ let wheels = [];
 function blob() {
   const c = document.createElement('canvas'); c.width = c.height = 256; const x = c.getContext('2d');
   const g = x.createRadialGradient(128, 128, 0, 128, 128, 128);
-  g.addColorStop(0, 'rgba(18,22,30,.55)'); g.addColorStop(.5, 'rgba(18,22,30,.22)'); g.addColorStop(1, 'rgba(18,22,30,0)');
+  g.addColorStop(0, 'rgba(18,22,30,.78)'); g.addColorStop(.45, 'rgba(18,22,30,.4)'); g.addColorStop(1, 'rgba(18,22,30,0)');
   x.fillStyle = g; x.fillRect(0, 0, 256, 256);
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
 }
-const ao = new THREE.Mesh(new THREE.PlaneGeometry(2.9, 5.0), new THREE.MeshBasicMaterial({ map: blob(), transparent: true, depthWrite: false }));
+const ao = new THREE.Mesh(new THREE.PlaneGeometry(3.1, 5.3), new THREE.MeshBasicMaterial({ map: blob(), transparent: true, depthWrite: false }));
 ao.rotation.x = -Math.PI / 2; ao.position.y = 0.004;
-const floor = new THREE.Mesh(new THREE.PlaneGeometry(14, 14), new THREE.ShadowMaterial({ opacity: 0.16 }));
+const floorMat = new THREE.ShadowMaterial({ opacity: 0.2 });
+floorMat.onBeforeCompile = sh => {   // radial fade: no visible edge wherever the shadow reaches
+  sh.vertexShader = 'varying vec2 vFloor;\n' + sh.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\n vFloor = position.xy;');
+  sh.fragmentShader = 'varying vec2 vFloor;\n' + sh.fragmentShader.replace('#include <fog_fragment>', 'gl_FragColor.a *= 1.0 - smoothstep(2.4, 4.6, length(vFloor));\n#include <fog_fragment>');
+};
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(14, 14), floorMat);
 floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true;
 
 // air: the car's centre of mass (suspension, jumps and flips turn around it); carSpace: car space, wheels on y = 0
@@ -1078,10 +1083,10 @@ const carSpace = new THREE.Group(); carSpace.position.y = -COG; air.add(carSpace
 const pivot = new THREE.Group(); pivot.add(air, ao);
 const rig = new THREE.Group(); rig.add(pivot, floor);
 const key = new THREE.DirectionalLight(0xffffff, 2.0);
-key.position.set(2.5, 9, 3.5);
+key.position.set(1.4, 10, 2.2);
 key.castShadow = true; key.shadow.mapSize.set(isTouch ? 1024 : 2048, isTouch ? 1024 : 2048);
-Object.assign(key.shadow.camera, { left: -3.6, right: 3.6, top: 3.6, bottom: -3.6, near: 1, far: 20 });
-key.shadow.radius = 14; key.shadow.blurSamples = 20; key.shadow.bias = -0.0004;
+Object.assign(key.shadow.camera, { left: -5.5, right: 5.5, top: 5.5, bottom: -5.5, near: 1, far: 20 });
+key.shadow.radius = 10; key.shadow.blurSamples = 20; key.shadow.bias = -0.0004;
 rig.add(key, key.target);
 const rimL = new THREE.DirectionalLight(0xdfe7ff, 1.1); rimL.position.set(-6, 4, -6); scene.add(rimL);
 scene.add(rig);
