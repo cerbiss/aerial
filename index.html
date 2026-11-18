@@ -75,8 +75,10 @@ button{font:inherit;color:inherit}
 .bar.solid{background:rgba(238,240,243,.78);-webkit-backdrop-filter:saturate(1.4) blur(16px);backdrop-filter:saturate(1.4) blur(16px);box-shadow:0 1px 0 var(--line-2)}
 .brand{display:inline-flex;align-items:center;gap:10px;text-decoration:none;font-weight:700;font-size:1.06rem;letter-spacing:-.01em;font-variation-settings:"wdth" 125}
 .brand svg{width:26px;height:26px}
-.where{font-size:.9rem;color:var(--graphite);height:1.4em;overflow:hidden;position:relative;min-width:10em;text-align:center}
-.where span{display:block;transition:transform .5s var(--ease), opacity .3s}
+.nav{display:flex;gap:4px;padding:4px;border-radius:999px}
+.nav a{position:relative;font-size:.9rem;font-weight:500;color:var(--graphite);text-decoration:none;padding:8px 14px;border-radius:999px;transition:color .2s, background-color .25s}
+.nav a:hover{color:var(--ink)}
+.nav a.on{color:var(--ink);background:rgba(20,23,29,.06)}
 .bar .btn{justify-self:end;height:40px;padding:0 18px;font-size:.92rem}
 .bar-progress{position:absolute;left:0;right:0;bottom:-1px;height:2px;transform-origin:left;transform:scaleX(0);background:var(--orange)}
 
@@ -141,6 +143,53 @@ section{position:relative}
 .svc-card .btn{align-self:flex-start;margin-top:6px}
 .svc-more{margin-top:34px;font-size:.9rem;color:var(--graphite)}
 .svc-more + .svc{margin-top:12px}
+
+.micro{font-size:.88rem;color:var(--graphite);margin-top:-6px}
+/* quick targets */
+.goals{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:18px}
+.goals-label{font-size:.9rem;color:var(--graphite);margin-right:2px;white-space:nowrap;flex:none}
+.goals button{border:0;cursor:pointer;height:36px;padding:0 14px;border-radius:999px;font-size:.88rem;font-weight:600;background:var(--studio);color:var(--ink);transition:background-color .2s, color .2s, transform .3s var(--ease)}
+.goals button:hover{background:#E3E7ED}
+.goals button.on{background:var(--ink);color:#fff}
+.goals button:active{transform:scale(.96)}
+/* steppers */
+.slider-row{display:flex;align-items:center;gap:10px}
+.slider-row .slider{flex:1}
+.step{flex:none;width:36px;height:36px;border-radius:50%;border:0;cursor:pointer;background:var(--studio);font-size:1.1rem;font-weight:600;line-height:1;color:var(--ink);transition:background-color .2s, transform .25s var(--ease)}
+.step:hover{background:#E3E7ED}
+.step:active{transform:scale(.92)}
+/* rank ladder */
+.ladder{display:grid;grid-template-columns:repeat(22,1fr);gap:3px;margin-top:22px;padding-bottom:18px;position:relative}
+.ladder i{height:8px;border-radius:3px;background:var(--line-2);position:relative;transition:background .3s, transform .3s var(--ease)}
+.ladder i.in{background:linear-gradient(135deg,var(--c1),var(--c2))}
+.ladder i.from{background:var(--blue)}
+.ladder i.to{box-shadow:0 0 0 2px var(--paper), 0 0 0 3.5px var(--ink)}
+.ladder i[data-t]::after{content:attr(data-t);position:absolute;top:13px;left:0;font-size:.68rem;font-style:normal;color:var(--graphite);font-variation-settings:"wdth" 100}
+/* savings + assurance */
+.save{margin-top:10px;font-size:.9rem;font-weight:600;color:#0E8A4F;min-height:1.4em}
+.save.nudge{color:var(--blue)}
+.assure{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:6px 18px}
+.assure li{display:flex;align-items:center;gap:8px;font-size:.84rem;color:var(--graphite)}
+.assure li::before{content:"";width:9px;height:5px;border-left:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink);transform:rotate(-45deg) translateY(-2px)}
+/* coaching anchors */
+.save-tag{font-size:.86rem;font-weight:600;color:#0E8A4F;margin-top:-4px}
+.save-tag.muted-tag{color:var(--graphite);font-weight:500}
+/* closing quote card */
+.quote-card{background:var(--paper);border-radius:var(--r-panel);box-shadow:var(--shadow), 0 0 0 1px var(--line-2);padding:22px 26px;display:grid;grid-template-columns:1fr auto;grid-template-rows:auto auto;gap:4px 28px;align-items:center;text-align:left;min-width:min(620px,100%)}
+.quote-label{font-size:.82rem;color:var(--graphite)}
+.quote-route{font-weight:600;grid-column:1}
+.quote-price{grid-column:1;font-size:2rem;font-weight:640;letter-spacing:-.03em;line-height:1.1;font-variation-settings:"wdth" 125}
+.quote-card .ctas{grid-column:2;grid-row:1 / span 3}
+/* docked quote */
+.dock{position:fixed;left:50%;bottom:18px;z-index:25;display:flex;align-items:center;gap:16px;padding:8px 8px 8px 20px;border-radius:999px;
+  background:rgba(255,255,255,.88);-webkit-backdrop-filter:saturate(1.4) blur(16px);backdrop-filter:saturate(1.4) blur(16px);
+  box-shadow:0 12px 32px -10px rgba(20,23,29,.28), 0 0 0 1px var(--line-2);
+  transform:translate(-50%,calc(100% + 30px));transition:transform .55s var(--ease)}
+.dock.show{transform:translate(-50%,0)}
+.dock-q{display:flex;align-items:baseline;gap:12px;white-space:nowrap}
+.dock-q span{font-size:.88rem;color:var(--graphite)}
+.dock-q b{font-size:1.05rem;font-variation-settings:"wdth" 120}
+.dock .btn{height:42px}
 
 /* ---------- proof ---------- */
 #proof{padding:44vh 0 6vh}
@@ -264,7 +313,7 @@ footer p a{color:var(--ink);text-underline-offset:2px}
 /* ---------- responsive ---------- */
 @media (max-width:960px){
   body{font-size:16px}
-  .where{display:none}
+  .nav{display:none}
   .bar{grid-template-columns:1fr auto}
   .hero-bottom{flex-direction:column;align-items:stretch;gap:22px}
   .config{align-items:flex-start}
@@ -273,6 +322,20 @@ footer p a{color:var(--ink);text-underline-offset:2px}
   /* the car shows in the open space above each block; blocks slide over it */
   #services,#price,#faq{padding-top:62vh}
   #proof{padding-top:58vh}
+  .sw{width:36px;height:36px}
+  .seg button{height:44px}
+  .step{width:44px;height:44px}
+  .goals button{height:40px}
+  .dock{left:12px;right:12px;bottom:12px;transform:translateY(calc(100% + 30px));justify-content:space-between}
+  .dock.show{transform:none}
+  .dock-q{flex-direction:column;gap:0;align-items:flex-start;overflow:hidden}
+  .dock-q span{font-size:.78rem;max-width:52vw;overflow:hidden;text-overflow:ellipsis}
+  .quote-card{grid-template-columns:1fr;text-align:left}
+  .quote-card .ctas{grid-column:1;grid-row:auto;margin-top:12px}
+  .ladder i[data-t]::after{font-size:.6rem}
+  .goals{flex-wrap:nowrap;overflow-x:auto;margin-left:-4px;padding:2px 4px;scrollbar-width:none}
+  .goals::-webkit-scrollbar{display:none}
+  .goals button{flex:none}
   .facts{grid-template-columns:1fr 1fr}
   .fact,.fact + .fact{padding:20px 14px 18px 0;border-left:0;border-bottom:1px solid var(--line)}
   .fact:nth-child(even){padding-left:14px;border-left:1px solid var(--line)}
@@ -311,8 +374,10 @@ footer p a{color:var(--ink);text-underline-offset:2px}
     <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="#14171D"/><path d="M8 21.5 16 8l8 13.5h-4.2L16 14.8l-3.8 6.7z" fill="#fff"/><circle cx="16" cy="22.6" r="2.1" fill="#FF6A1A"/></svg>
     Aerial
   </a>
-  <div class="where" aria-live="polite"><span id="where">Overview</span></div>
-  <a class="btn btn-primary magnetic" href="#price">Price my boost</a>
+  <nav class="nav" aria-label="Sections">
+    <a href="#services" data-nav="services">Services</a><a href="#process" data-nav="process">How it works</a><a href="#price" data-nav="price">Pricing</a><a href="#coaching" data-nav="coaching">Coaching</a><a href="#faq" data-nav="faq">FAQ</a>
+  </nav>
+  <a class="btn btn-blue magnetic" href="#price">Price my boost</a>
   <i class="bar-progress" id="barp"></i>
 </header>
 
@@ -327,9 +392,10 @@ footer p a{color:var(--ink);text-underline-offset:2px}
       <div class="hero-copy fade-in">
         <p class="lead">Boosts, duo games and coaching from Grand Champion and Supersonic Legend players. Every rank from Bronze up, on PC, PlayStation, Xbox and Switch.</p>
         <div class="ctas">
-          <a class="btn btn-primary magnetic" href="#price">Price my boost</a>
+          <a class="btn btn-blue magnetic" href="#price">Price my boost</a>
           <a class="btn btn-line" href="#services">See services</a>
         </div>
+        <p class="micro">From €1.50 per division. You only pay once a booster accepts your order.</p>
       </div>
       <div class="config fade-in">
         <div class="swatches" role="radiogroup" aria-label="Car paint" id="swatches"></div>
@@ -404,14 +470,23 @@ footer p a{color:var(--ink);text-underline-offset:2px}
       <div class="right block">
         <form class="panel" id="calc" novalidate>
           <h2 class="h2">Price your boost</h2>
+          <div class="goals" role="group" aria-label="Quick targets">
+            <span class="goals-label">Aim for</span>
+            <button type="button" data-goal="next">Next rank</button>
+            <button type="button" data-goal="12">Diamond</button>
+            <button type="button" data-goal="15">Champion</button>
+            <button type="button" data-goal="18">Grand Champion</button>
+            <button type="button" data-goal="21">SSL</button>
+          </div>
 
           <div class="field">
             <div class="field-top"><label for="rFrom">Current rank</label><span class="rank"><i class="gem" id="gFrom"></i><span id="nFrom">Platinum II</span></span></div>
-            <div class="slider"><div class="ticks" id="ticks1"></div><input id="rFrom" type="range" min="0" max="21" value="10"></div>
+            <div class="slider-row"><button type="button" class="step" data-for="rFrom" data-d="-1" aria-label="Lower current rank">−</button><div class="slider"><div class="ticks" id="ticks1"></div><input id="rFrom" type="range" min="0" max="21" value="10"></div><button type="button" class="step" data-for="rFrom" data-d="1" aria-label="Raise current rank">+</button></div>
           </div>
           <div class="field">
             <div class="field-top"><label for="rTo">Target rank</label><span class="rank"><i class="gem" id="gTo"></i><span id="nTo">Diamond III</span></span></div>
-            <div class="slider"><div class="ticks" id="ticks2"></div><input id="rTo" type="range" min="0" max="21" value="14"></div>
+            <div class="slider-row"><button type="button" class="step" data-for="rTo" data-d="-1" aria-label="Lower target rank">−</button><div class="slider"><div class="ticks" id="ticks2"></div><input id="rTo" type="range" min="0" max="21" value="14"></div><button type="button" class="step" data-for="rTo" data-d="1" aria-label="Raise target rank">+</button></div>
+            <div class="ladder" id="ladder" aria-hidden="true"></div>
           </div>
 
           <div class="field">
@@ -438,7 +513,12 @@ footer p a{color:var(--ink);text-underline-offset:2px}
             </div>
             <button class="btn btn-blue btn-lg magnetic" type="submit">Order boost</button>
           </div>
-          <p class="fine">You pay when a booster accepts the order. Divisions that aren't delivered are refunded.</p>
+          <p class="save" id="save" aria-live="polite"></p>
+          <ul class="assure">
+            <li>Pay only when a booster accepts</li>
+            <li>Refund for any division not delivered</li>
+            <li>Pause the order whenever you want</li>
+          </ul>
         </form>
       </div>
     </div>
@@ -459,12 +539,14 @@ footer p a{color:var(--ink);text-underline-offset:2px}
         <article class="plan pick">
           <div class="plan-top"><h3>Five sessions</h3><span class="tag">Most booked</span></div>
           <div class="cost">€109 <small>€21.80 a session</small></div>
+          <p class="save-tag">€16 less than five single sessions</p>
           <ul><li>Five live sessions</li><li>Unlimited replay reviews</li><li>Weekly training-pack plan</li><li>Chat with your coach between sessions</li></ul>
           <a class="btn btn-blue magnetic" href="#cta">Book five sessions</a>
         </article>
         <article class="plan">
           <div class="plan-top"><h3>Season</h3></div>
           <div class="cost">€139 <small>per month</small></div>
+          <p class="save-tag muted-tag">About €35 a week</p>
           <ul><li>A session every week</li><li>Ten duo games a month</li><li>Tournament preparation</li><li>First pick of time slots</li></ul>
           <a class="btn btn-line" href="#cta">Start a season</a>
         </article>
@@ -494,9 +576,14 @@ footer p a{color:var(--ink);text-underline-offset:2px}
       <h2 class="split" id="ctaTitle">Start next season higher.</h2>
     </div>
     <div class="wrap cta-bottom">
-      <div class="ctas">
-        <a class="btn btn-primary magnetic" href="#price">Price my boost</a>
-        <a class="btn btn-line" href="#coaching">Book coaching</a>
+      <div class="quote-card">
+        <p class="quote-label">Your quote</p>
+        <p class="quote-route" id="qRoute">Platinum II to Diamond III in 2v2</p>
+        <p class="quote-price" id="qPrice">€22.50</p>
+        <div class="ctas">
+          <a class="btn btn-blue btn-lg magnetic" href="#price">Order this boost</a>
+          <a class="btn btn-line" href="#price">Change it</a>
+        </div>
       </div>
       <footer>
         <a class="brand" href="#hero" aria-label="Aerial, back to top"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="#14171D"/><path d="M8 21.5 16 8l8 13.5h-4.2L16 14.8l-3.8 6.7z" fill="#fff"/><circle cx="16" cy="22.6" r="2.1" fill="#FF6A1A"/></svg>Aerial</a>
@@ -507,6 +594,10 @@ footer p a{color:var(--ink);text-underline-offset:2px}
   </section>
 </main>
 
+<div class="dock" id="dock">
+  <div class="dock-q"><span id="dockRoute">Platinum II to Diamond III</span><b id="dockPrice">€22.50</b></div>
+  <a class="btn btn-blue" href="#price">See my quote</a>
+</div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <!-- ============ interface ============ -->
@@ -530,29 +621,41 @@ footer p a{color:var(--ink);text-underline-offset:2px}
   new IntersectionObserver(es => es.forEach(e => e.isIntersecting && e.target.classList.add('on')), { threshold: .4 }).observe($('#ctaTitle'));
 
   // header: solid on scroll, current section, progress; process steps
-  const secs = $$('main > section'), whereEl = $('#where'), bar = $('#bar'), barp = $('#barp');
+  const secs = $$('main > section'), bar = $('#bar'), barp = $('#barp'), navLinks = $$('.nav a');
   const steps = $('#steps'), stepLis = $$('#steps li');
   const track = document.createElement('span'); track.className = 'track'; track.innerHTML = '<i></i>'; steps.prepend(track);
-  let current = 'Overview';
+  let current = '';
   function onScroll() {
     const y = scrollY, vh = innerHeight, max = document.documentElement.scrollHeight - vh;
     bar.classList.toggle('solid', y > 40);
     barp.style.transform = `scaleX(${max > 0 ? y / max : 0})`;
-    let label = secs[0].dataset.label;
-    for (const s of secs) if (s.offsetTop <= y + vh * .5) label = s.dataset.label;
-    if (label !== current) {
-      current = label;
-      whereEl.style.transform = 'translateY(-100%)'; whereEl.style.opacity = 0;
-      setTimeout(() => {
-        whereEl.textContent = current; whereEl.style.transition = 'none'; whereEl.style.transform = 'translateY(100%)';
-        requestAnimationFrame(() => requestAnimationFrame(() => { whereEl.style.transition = ''; whereEl.style.transform = ''; whereEl.style.opacity = 1; }));
-      }, 200);
+    let id = secs[0].id;
+    for (const s of secs) if (s.offsetTop <= y + vh * .5) id = s.id;
+    if (id !== current) {
+      current = id;
+      navLinks.forEach(a => { const on = a.dataset.nav === id; a.classList.toggle('on', on); on ? a.setAttribute('aria-current', 'true') : a.removeAttribute('aria-current'); });
     }
+    dockUpdate();
     const r = $('#process').getBoundingClientRect();
     const prog = Math.min(1, Math.max(0, (-r.top) / (r.height - vh) * 1.08 - .04));
     steps.style.setProperty('--p', prog);
     stepLis.forEach((li, i) => li.classList.toggle('on', prog > i / 4 + .01 || (i === 0 && r.top < vh * .3)));
   }
+  // dock + closing card follow the live quote
+  const dock = $('#dock');
+  function dockUpdate() {
+    const vh = innerHeight, heroB = $('#hero').getBoundingClientRect().bottom;
+    const pr = $('#price').getBoundingClientRect(), ct = $('#cta').getBoundingClientRect();
+    const show = heroB < vh * 0.4 && !(pr.top < vh * 0.85 && pr.bottom > vh * 0.15) && ct.top > vh * 0.8;
+    dock.classList.toggle('show', show);
+    dock.setAttribute('aria-hidden', !show);
+    dock.querySelector('a').tabIndex = show ? 0 : -1;
+  }
+  addEventListener('quote', () => {
+    const q = window.quote; if (!q) return;
+    $('#dockRoute').textContent = q.route; $('#dockPrice').textContent = q.price;
+    $('#qRoute').textContent = `${q.route} in ${q.pl}`; $('#qPrice').textContent = q.price;
+  });
   addEventListener('scroll', onScroll, { passive: true }); addEventListener('resize', onScroll); onScroll();
 
   // magnetic buttons
@@ -602,6 +705,11 @@ footer p a{color:var(--ink);text-underline-offset:2px}
   const rFrom = $('#rFrom'), rTo = $('#rTo');
   [$('#ticks1'), $('#ticks2')].forEach(t => { for (let i = 0; i < RANKS.length; i++) { const k = document.createElement('i'); if (i % 3 === 0) k.className = 't'; t.appendChild(k); } });
   let mult = 1, shown = 0, anim;
+  const ladder = $('#ladder'), ladderCells = RANKS.map((r, i) => {
+    const c = document.createElement('i'); c.style.setProperty('--c1', r.c1); c.style.setProperty('--c2', r.c2);
+    if (i % 3 === 0) c.dataset.t = ['B', 'S', 'G', 'P', 'D', 'C', 'GC', 'SSL'][r.tier];
+    ladder.appendChild(c); return c;
+  });
   function show(gem, name, input, r) {
     gem.style.setProperty('--c1', r.c1); gem.style.setProperty('--c2', r.c2);
     name.textContent = r.label; input.setAttribute('aria-valuetext', r.label);
@@ -609,7 +717,7 @@ footer p a{color:var(--ink);text-underline-offset:2px}
   }
   function tweenTo(v) {
     cancelAnimationFrame(anim);
-    const from = shown, t0 = performance.now(), dur = reduced ? 0 : 520;
+    const from = shown, t0 = performance.now(), dur = reduced ? 0 : 280;
     const step = now => {
       const k = dur ? Math.min(1, (now - t0) / dur) : 1, e = 1 - Math.pow(1 - k, 3);
       shown = from + (v - from) * e;
@@ -638,7 +746,17 @@ footer p a{color:var(--ink);text-underline-offset:2px}
     // boosters play about 10 hours a day; priority finishes ~25% sooner
     const h = hours * ($('#prio').checked ? 0.75 : 1);
     const when = h <= 12 ? `${Math.max(2, Math.round(h))}–${Math.round(h * 1.5) + 2} hours` : `${Math.ceil(h / 10)}–${Math.ceil(h / 10) + 1} days`;
-    $('#eta').textContent = `${n} division${n > 1 ? 's' : ''}, ready in about ${when}` + (bundle ? `. Includes ${BUNDLE.off * 100}% off for ${BUNDLE.from}+ divisions` : '');
+    $('#eta').textContent = `${n} division${n > 1 ? 's' : ''}, ready in about ${when}`;
+    const final = full * (bundle ? 1 - BUNDLE.off : 1), money = v => '€' + (v < 100 ? v.toFixed(2) : Math.round(v));
+    $('#save').textContent = bundle ? `You save ${money(full - final)} with ${BUNDLE.off * 100}% off orders of ${BUNDLE.from}+ divisions.`
+      : n === BUNDLE.from - 1 ? `One more division and the whole order is ${BUNDLE.off * 100}% off.` : '';
+    $('#save').classList.toggle('nudge', !bundle && n === BUNDLE.from - 1);
+    // ladder: where you are, where you're going
+    ladderCells.forEach((c, i) => { c.classList.toggle('in', i > a && i <= b); c.classList.toggle('from', i === a); c.classList.toggle('to', i === b); });
+    // share the quote with the dock and the closing section; remember it for next visit
+    window.quote = { route: `${RANKS[a].label} to ${RANKS[b].label}`, pl, price: money(final) };
+    dispatchEvent(new CustomEvent('quote'));
+    try { localStorage.setItem('aerial-quote', JSON.stringify({ a, b, pl: $$('button', $('#playlist')).findIndex(x => x.getAttribute('aria-checked') === 'true'), x: $$('#calc input[type=checkbox]').map(c => c.checked) })); } catch (e) {}
     if (src) dispatchEvent(new CustomEvent('calc'));
   }
   rFrom.addEventListener('input', () => calc(rFrom));
@@ -657,7 +775,27 @@ footer p a{color:var(--ink);text-underline-offset:2px}
     const el = $('#price');
     if (window.lenis) window.lenis.scrollTo(el, { duration: 1.6 }); else el.scrollIntoView({ behavior: 'smooth' });
   }));
+  // steppers
+  $$('.step').forEach(btn => btn.addEventListener('click', () => {
+    const inp = $('#' + btn.dataset.for); inp.value = Math.max(0, Math.min(21, +inp.value + +btn.dataset.d)); calc(inp);
+  }));
+  // quick targets
+  $$('[data-goal]').forEach(btn => btn.addEventListener('click', () => {
+    const a = +rFrom.value, g = btn.dataset.goal === 'next' ? a + 1 : +btn.dataset.goal;
+    rTo.value = Math.min(21, Math.max(a + 1, g)); calc(rTo);
+    $$('[data-goal]').forEach(x => x.classList.toggle('on', x === btn));
+  }));
+  rTo.addEventListener('input', () => $$('[data-goal]').forEach(x => x.classList.remove('on')));
   $('#calc').addEventListener('submit', e => { e.preventDefault(); toast('Checkout isn’t connected yet. This page is a preview.'); });
+  // restore the last quote (picks up where the visitor left off)
+  try {
+    const q = JSON.parse(localStorage.getItem('aerial-quote') || 'null');
+    if (q && q.b > q.a) {
+      rFrom.value = q.a; rTo.value = q.b;
+      const btns = $$('button', $('#playlist')); if (btns[q.pl]) { btns.forEach(x => x.setAttribute('aria-checked', x === btns[q.pl])); pill.style.transform = `translateX(${q.pl * 100}%)`; mult = +btns[q.pl].dataset.m; }
+      $$('#calc input[type=checkbox]').forEach((c, i) => (c.checked = !!(q.x || [])[i]));
+    }
+  } catch (e) {}
   calc();
 })();
 </script>
@@ -1130,7 +1268,7 @@ const MOB = {
   price:       { x: 0,    y: 0.38,  s: 0.92 },
   coaching:    { x: 0,    y: 2.4,   s: 0.8 },
   faq:         { x: 0,    y: 0.38,  s: 0.92 },
-  cta:         { x: 0,    y: 0.06,  s: 0.92 },
+  cta:         { x: 0,    y: 0.36,  s: 0.72 },
 };
 const secs = [...document.querySelectorAll('main > section')];
 let anchors = [], mobile = false, halfW = 4, halfH = 2.5;
