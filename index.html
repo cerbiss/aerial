@@ -703,7 +703,7 @@ import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
    rotY:   turns the model so its nose faces +Z
    wheels: top-level wheel nodes, spun around the axle
    paint:  materials that take the paint swatches
-   nozzle: boost exhaust position (car is 4.3 long, nose at +Z)
+   nozzles/vent: boost thrusters and their opening size (car is 4.3 long, nose at +Z)
    ------------------------------------------------------------------ */
 const MODEL = {
   url: './octane.glb',
@@ -711,7 +711,9 @@ const MODEL = {
   length: 4.3,
   wheels: /^Dieci[ _]-[ _](FR|FL|BR|BL)[ _]\(Octane\)$/,   // three.js turns spaces in node names into _
   paint: /^Octane_Body$/,
-  nozzle: { x: 0, y: 0.9, z: -1.78 },                    // rear exhaust, in normalised car space
+  // the Octane's two rectangular rear thrusters (normalised car space, nose at +Z)
+  nozzles: [{ x: -0.285, y: 0.86, z: -1.84 }, { x: 0.285, y: 0.86, z: -1.84 }],
+  vent: { w: 0.2, h: 0.74 },                  // rear exhaust, in normalised car space
 };
 
 const $ = s => document.querySelector(s);
@@ -916,12 +918,39 @@ function jetGeometry(len, r0, bulge) {
   g.rotateX(Math.PI / 2);                     // points out of the back (−Z)
   return g;
 }
-const jet = new THREE.Group();
-const jetOuter = new THREE.Mesh(jetGeometry(1, 0.17, 0.06), jetMaterial(false)); jetOuter.renderOrder = 3;
-const jetInner = new THREE.Mesh(jetGeometry(0.6, 0.09, 0.02), jetMaterial(true)); jetInner.renderOrder = 4;
-jet.add(jetOuter, jetInner);
-jet.position.copy(NOZ);
-pivot.add(jet);
+function ventTexture() {
+  // rounded-rectangle glow that fills the thruster opening
+  const W = 64, H = 192, c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d');
+  const g = x.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, H / 2);
+  g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(0.55, 'rgba(255,255,255,0.85)'); g.addColorStop(1, 'rgba(255,255,255,0.15)');
+  x.fillStyle = g; const r = 22;
+  x.beginPath(); x.moveTo(r, 2); x.arcTo(W - 2, 2, W - 2, H - 2, r); x.arcTo(W - 2, H - 2, 2, H - 2, r); x.arcTo(2, H - 2, 2, 2, r); x.arcTo(2, 2, W - 2, 2, r); x.fill();
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+const jetGeoOuter = jetGeometry(1, 0.17, 0.06), jetGeoInner = jetGeometry(0.6, 0.09, 0.02);
+const jetMatOuter = jetMaterial(false), jetMatInner = jetMaterial(true);
+const ventMat = new THREE.MeshBasicMaterial({ map: ventTexture(), transparent: true, depthWrite: false, opacity: 0, toneMapped: false });
+ventMat.color = bBody;                                   // shares the live boost colour
+const thrusters = [];                                    // { flame, vent, pos }
+let VENT = { w: 0.26, h: 0.26 };
+function setNozzles(list, vent) {
+  thrusters.forEach(t => { pivot.remove(t.flame); pivot.remove(t.vent); });
+  thrusters.length = 0;
+  VENT = vent || VENT;
+  list.forEach(p => {
+    const pos = new THREE.Vector3(p.x, p.y, p.z);
+    const flame = new THREE.Group();
+    const o = new THREE.Mesh(jetGeoOuter, jetMatOuter); o.renderOrder = 3;
+    const i = new THREE.Mesh(jetGeoInner, jetMatInner); i.renderOrder = 4;
+    flame.add(o, i); flame.position.copy(pos);
+    const vt = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), ventMat);
+    vt.rotation.y = Math.PI; vt.scale.set(VENT.w * 0.9, VENT.h * 0.92, 1);
+    vt.position.copy(pos).add(new THREE.Vector3(0, 0, 0.012)); vt.renderOrder = 2;
+    pivot.add(flame, vt);
+    thrusters.push({ flame, vent: vt, pos });
+  });
+}
+setNozzles([{ x: 0, y: 0.56, z: -2.32 }], { w: 0.26, h: 0.26 });   // placeholder car: one round nozzle
 
 // --- puff trail ---
 function cloudTexture() {
@@ -975,21 +1004,29 @@ function flameStep(dt, amt, s, t) {
   const ck = 1 - Math.exp(-dt * 6);
   bCore.lerp(tCore, ck); bBody.lerp(tBody, ck); bSmoke.lerp(tSmoke, ck);
   // jet
-  const flick = 1 + Math.sin(t * 53) * 0.06 + Math.sin(t * 31.7) * 0.05;
-  jet.visible = amt > 0.02;
-  jet.scale.set(0.8 + amt * 0.3, 0.8 + amt * 0.3, (0.25 + amt * 0.75) * flick);
+  // flames take the shape of the opening: narrow and tall for the Octane's thrusters
+  const bx = VENT.w / 0.34, by = Math.min(1.6, VENT.h / 0.34), w = 0.8 + amt * 0.3;
+  thrusters.forEach((th, k) => {
+    const flick = 1 + Math.sin(t * 53 + k * 1.7) * 0.06 + Math.sin(t * 31.7 + k * 2.3) * 0.05;
+    th.flame.visible = amt > 0.02;
+    th.flame.scale.set(bx * w, by * w, (0.25 + amt * 0.75) * flick);
+  });
+  ventMat.opacity = Math.min(1, amt * 1.6);
   jetUniforms.uTime.value = t; jetUniforms.uBoost.value = Math.min(1, amt * 1.5);
   // puffs leave the nozzle, billow and fall behind as if the car were flying forward
-  fAcc += amt * 110 * dt;
+  fAcc += amt * 70 * thrusters.length * dt;
   back.set(0, 0, -1); up.set(0, 1, 0);
   while (fAcc >= 1) {
     fAcc -= 1; const i = fI; fI = (fI + 1) % N;
-    tmp.copy(NOZ); tmp.z -= 0.12 + Math.random() * 0.18;
+    const th = thrusters[(Math.random() * thrusters.length) | 0];
+    tmp.copy(th.pos);
+    tmp.x += (Math.random() - .5) * VENT.w * 0.6; tmp.y += (Math.random() - .5) * VENT.h * 0.45;
+    tmp.z -= 0.12 + Math.random() * 0.18;
     fPos[i * 3] = tmp.x; fPos[i * 3 + 1] = tmp.y; fPos[i * 3 + 2] = tmp.z;
     jit.set((Math.random() - .5) * .3, (Math.random() - .5) * .3, (Math.random() - .5) * .3);
     fVel[i].copy(back).multiplyScalar((6.5 + Math.random() * 2.5) * (0.6 + amt * 0.4)).add(jit);
     fLife[i] = 0; fMax[i] = 0.6 + Math.random() * 0.4;
-    fBase[i] = (0.26 + Math.random() * 0.14) * s; fRot[i] = Math.random() * 6.283; fSpin[i] = (Math.random() - .5) * 1.5;
+    fBase[i] = (thrusters.length > 1 ? 0.25 : 0.26) * (1 + Math.random() * 0.5) * s; fRot[i] = Math.random() * 6.283; fSpin[i] = (Math.random() - .5) * 1.5;
   }
   for (let i = 0; i < N; i++) {
     if (fLife[i] >= 1) continue;
@@ -1047,7 +1084,7 @@ function useModel(root) {
     holder.userData.axis = AXIS_X.clone().applyQuaternion(parent.getWorldQuaternion(q).invert()).normalize();
     return holder;
   });
-  NOZ.set(MODEL.nozzle.x, MODEL.nozzle.y, MODEL.nozzle.z); jet.position.copy(NOZ);
+  setNozzles(MODEL.nozzles, MODEL.vent);
   car.visible = false; pivot.add(wrap);
 }
 function startDrive() { modelReady = true; age = 0; cur = reduced ? stateOf('hero') : { ...stateOf('hero'), x: -1.5, ry: Math.PI / 2 - 0.2, boost: 1 }; }
