@@ -952,7 +952,7 @@ renderer.setPixelRatio(Math.min(devicePixelRatio, isTouch ? 1.75 : 2));
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.0;
 renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.VSMShadowMap;
+renderer.shadowMap.type = THREE.PCFShadowMap;   // VSM darkened the whole light frustum and left a hard edge under the car
 
 const scene = new THREE.Scene();
 const pmrem = new THREE.PMREMGenerator(renderer);
@@ -1085,8 +1085,8 @@ const rig = new THREE.Group(); rig.add(pivot, floor);
 const key = new THREE.DirectionalLight(0xffffff, 2.0);
 key.position.set(1.4, 10, 2.2);
 key.castShadow = true; key.shadow.mapSize.set(isTouch ? 1024 : 2048, isTouch ? 1024 : 2048);
-Object.assign(key.shadow.camera, { left: -5.5, right: 5.5, top: 5.5, bottom: -5.5, near: 1, far: 20 });
-key.shadow.radius = 10; key.shadow.blurSamples = 20; key.shadow.bias = -0.0004;
+Object.assign(key.shadow.camera, { left: -5.5, right: 5.5, top: 5.5, bottom: -5.5, near: 1, far: 22 });
+key.shadow.radius = 5; key.shadow.bias = -0.0005; key.shadow.normalBias = 0.03;
 rig.add(key, key.target);
 const rimL = new THREE.DirectionalLight(0xdfe7ff, 1.1); rimL.position.set(-6, 4, -6); scene.add(rimL);
 scene.add(rig);
