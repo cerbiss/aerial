@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Aerial symbol: a solid A cut by a rising flight path, the ball leaving top right -->
+  <defs>
+    <mask id="cut" maskUnits="userSpaceOnUse" x="0" y="0" width="48" height="48">
+      <rect width="48" height="48" fill="#fff"/>
+      <path d="M-2 40C10 30 22 20 38 12" stroke="#000" stroke-width="5.2" fill="none" stroke-linecap="round"/>
+    </mask>
+  </defs>
+  <rect width="32" height="32" rx="8" fill="#14171D"/>
+  <g transform="translate(4 4) scale(.5)">
+    <path mask="url(#cut)" fill="#fff" d="M22 4 42 46H29.4L22 33 14.6 46H2z"/>
+    <circle cx="41" cy="9.5" r="5.4" fill="#FF6A1A"/>
+  </g>
+</svg>

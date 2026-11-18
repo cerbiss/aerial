@@ -1,10 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Aerial — Rocket League boosting and coaching</title>
-<meta name="description" content="Rank boosts, duo games and coaching from Grand Champion and Supersonic Legend players. Every match tracked live.">
+<title>Aerial — Boost e coaching per Rocket League</title>
+<meta name="description" content="Boost di rango, partite in duo e coaching con giocatori Gran Campione e Leggenda Supersonica. Ogni partita tracciata in diretta.">
+<meta name="theme-color" content="#EEF0F3">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preload" href="octane.glb" as="fetch" type="model/gltf-binary" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet">
@@ -28,7 +32,10 @@
   --font:"Archivo", ui-sans-serif, system-ui, sans-serif;
 }
 *{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
+html{-webkit-text-size-adjust:100%;color-scheme:light;scroll-padding:84px 0 96px}
+button,a,input,label{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.skip{position:fixed;left:16px;top:12px;z-index:60;padding:10px 16px;border-radius:999px;background:var(--ink);color:#fff;font-weight:600;font-size:.9rem;text-decoration:none;transform:translateY(-200%);transition:transform .3s var(--ease)}
+.skip:focus-visible{transform:none;outline-offset:2px}
 html.lenis, html.lenis body{height:auto}
 .lenis.lenis-smooth{scroll-behavior:auto!important}
 body{
@@ -41,7 +48,8 @@ body::before{
   background:radial-gradient(90vw 70vh at 50% 38%, #FFFFFF 0%, rgba(255,255,255,0) 70%),
              linear-gradient(#F1F3F6, #E7EAEE);
 }
-h1,h2,h3{margin:0;font-weight:640;letter-spacing:-.03em;line-height:1}
+h1,h2,h3{margin:0;font-weight:640;letter-spacing:-.03em;line-height:1;text-wrap:balance}
+p{text-wrap:pretty}
 h1,h2{font-variation-settings:"wdth" 125}
 h3{font-variation-settings:"wdth" 112;font-size:1.06rem;letter-spacing:-.01em;line-height:1.25}
 p{margin:0}
@@ -54,12 +62,11 @@ button{font:inherit;color:inherit}
 
 /* ---------- buttons ---------- */
 .btn{
-  --mx:0px;--my:0px;
   display:inline-flex;align-items:center;justify-content:center;gap:.5em;height:48px;padding:0 22px;border-radius:999px;border:0;cursor:pointer;
   font-weight:600;font-size:.98rem;text-decoration:none;white-space:nowrap;font-variation-settings:"wdth" 108;
-  transform:translate(var(--mx),var(--my));transition:transform .5s var(--ease), background-color .2s, box-shadow .2s, color .2s;
+  transition:transform .2s var(--ease), background-color .2s, box-shadow .2s, color .2s;
 }
-.btn:active{transform:translate(var(--mx),var(--my)) scale(.97)}
+.btn:active{transform:scale(.97)}
 .btn-primary{background:var(--ink);color:#fff}
 .btn-primary:hover{background:#000}
 .btn-blue{background:var(--blue);color:#fff}
@@ -73,18 +80,29 @@ button{font:inherit;color:inherit}
   padding:0 clamp(16px,3vw,40px);transition:background-color .3s, box-shadow .3s;
 }
 .bar.solid{background:rgba(238,240,243,.78);-webkit-backdrop-filter:saturate(1.4) blur(16px);backdrop-filter:saturate(1.4) blur(16px);box-shadow:0 1px 0 var(--line-2)}
-.brand{display:inline-flex;align-items:center;gap:10px;text-decoration:none;font-weight:700;font-size:1.06rem;letter-spacing:-.01em;font-variation-settings:"wdth" 125}
-.brand svg{width:26px;height:26px}
+/* wordmark: the i's dot is the ball, hit up and forward */
+.brand{display:inline-flex;align-items:flex-end;gap:.4em;text-decoration:none;font-weight:850;font-size:1.5rem;letter-spacing:-.04em;line-height:1;font-variation-settings:"wdth" 125;justify-self:start}
+.brand .mark{width:1.2em;height:1.2em;flex:none;color:var(--ink)}
+.brand span{padding-top:.24em}
+.brand b{position:relative;font-weight:inherit}
+.brand b::after{content:"";position:absolute;left:60%;top:-.24em;width:.24em;height:.24em;border-radius:50%;background:var(--orange)}
 .nav{display:flex;gap:4px;padding:4px;border-radius:999px}
 .nav a{position:relative;font-size:.9rem;font-weight:500;color:var(--graphite);text-decoration:none;padding:8px 14px;border-radius:999px;transition:color .2s, background-color .25s}
 .nav a:hover{color:var(--ink)}
 .nav a.on{color:var(--ink);background:rgba(20,23,29,.06)}
 .bar .btn{justify-self:end;height:40px;padding:0 18px;font-size:.92rem}
+.menu-btn{display:none;place-items:center;width:40px;height:40px;border:0;border-radius:50%;background:rgba(20,23,29,.06);cursor:pointer;padding:0}
+.menu-btn i,.menu-btn i::before{display:block;width:16px;height:1.5px;background:var(--ink);border-radius:1px;transition:transform .35s var(--ease)}
+.menu-btn i{position:relative;transform:translateY(-3px)}
+.menu-btn i::before{content:"";position:absolute;left:0;top:6px}
+.bar.open .menu-btn i{transform:rotate(45deg)}
+.bar.open .menu-btn i::before{transform:translateY(-6px) rotate(-90deg)}
 .bar-progress{position:absolute;left:0;right:0;bottom:-1px;height:2px;transform-origin:left;transform:scaleX(0);background:var(--orange)}
 
 /* ---------- 3D stage ---------- */
 #scene{position:fixed;inset:0;width:100%;height:100%;z-index:0;display:block;pointer-events:none}
 main{position:relative;z-index:1}
+#main:focus{outline:none}
 section{position:relative}
 
 /* ---------- hero ---------- */
@@ -212,6 +230,8 @@ section{position:relative}
 .steps li.on .n{background:var(--ink);color:#fff;box-shadow:none}
 .steps li:last-child.on .n{background:var(--orange)}
 .steps p{color:var(--graphite);font-size:.95rem;margin-top:8px;max-width:22em}
+/* small grey copy that the car can glide behind: a page-coloured halo keeps it legible */
+.lead,.micro,.config-label,.steps h3,.steps p{text-shadow:0 0 3px var(--studio),0 0 10px var(--studio),0 0 18px var(--studio)}
 
 /* ---------- calculator ---------- */
 #price{padding:16vh 0}
@@ -219,7 +239,8 @@ section{position:relative}
 .panel .h2{font-size:clamp(1.8rem,3vw,2.6rem)}
 .field{margin-top:26px}
 .field-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;gap:12px}
-.field-top label,.field-label{font-size:.9rem;color:var(--graphite)}
+.field-top label,.field-label{font-size:.9rem;color:var(--graphite);white-space:nowrap}
+.field-top .rank{text-align:right}
 .rank{display:flex;align-items:center;gap:10px;font-weight:600;font-variation-settings:"wdth" 110}
 .gem{width:14px;height:14px;border-radius:4px;transform:rotate(45deg);background:linear-gradient(135deg,var(--c1),var(--c2));box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
 .slider{position:relative;height:30px;display:flex;align-items:center}
@@ -261,9 +282,8 @@ input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 2px var(-
 .plan.pick{position:relative;background:var(--paper);border-radius:22px;box-shadow:var(--shadow), 0 0 0 1px var(--line-2);padding:32px;margin:-24px 0 0;border-left:0}
 .plan.pick + .plan{border-left:0}
 .plan-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
-.tag{font-size:.8rem;font-weight:600;color:var(--blue)}
 .cost{font-size:2.4rem;font-weight:640;letter-spacing:-.03em;line-height:1;font-variation-settings:"wdth" 125}
-.cost small{font-size:.9rem;font-weight:400;letter-spacing:0;color:var(--graphite);font-variation-settings:"wdth" 100}
+.cost small{display:block;margin-top:6px;font-size:.9rem;font-weight:400;letter-spacing:0;color:var(--graphite);font-variation-settings:"wdth" 100;white-space:nowrap}
 .plan ul{list-style:none;margin:6px 0 10px;padding:0;display:flex;flex-direction:column;gap:9px;flex:1}
 .plan li{display:flex;gap:10px;font-size:.95rem}
 .plan li::before{content:"";flex:none;width:11px;height:6px;margin-top:8px;border-left:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink);transform:rotate(-45deg)}
@@ -310,15 +330,24 @@ footer p a{color:var(--ink);text-underline-offset:2px}
 /* ---------- responsive ---------- */
 @media (max-width:960px){
   body{font-size:16px}
-  .nav{display:none}
-  .bar{grid-template-columns:1fr auto}
+  .bar{grid-template-columns:1fr auto auto;gap:8px}
+  .bar.open{background:rgba(238,240,243,.94);-webkit-backdrop-filter:saturate(1.4) blur(16px);backdrop-filter:saturate(1.4) blur(16px)}
+  .menu-btn{display:inline-grid}
+  .nav{position:absolute;top:64px;left:12px;right:12px;flex-direction:column;gap:2px;padding:8px;border-radius:18px;background:var(--paper);
+    box-shadow:0 18px 40px -16px rgba(20,23,29,.3), 0 0 0 1px var(--line-2);
+    opacity:0;visibility:hidden;transform:translateY(-8px);transition:opacity .2s, transform .3s var(--ease), visibility 0s .3s}
+  .bar.open .nav{opacity:1;visibility:visible;transform:none;transition:opacity .2s, transform .3s var(--ease)}
+  .nav a{padding:14px 16px;font-size:1rem;color:var(--ink);border-radius:12px}
   .hero-bottom{flex-direction:column;align-items:stretch;gap:22px}
+  /* like the other blocks: the car slides under the copy while scrolling (at rest it sits above it) */
+  .hero-bottom{background:var(--studio);box-shadow:0 -14px 14px -4px var(--studio)}
   .config{align-items:flex-start}
   .drag-zone{left:0;right:0;top:36%;bottom:42%}
   .two .right,.two .left{grid-column:1 / -1}
   /* the car shows in the open space above each block; blocks slide over it */
-  #services,#price,#faq{padding-top:62vh}
-  #proof{padding-top:58vh}
+  #services,#price,#faq{padding-top:48vh}
+  #proof{padding-top:46vh}
+  #coaching{padding:12vh 0 10vh}
   .sw{width:36px;height:36px}
   .seg button{height:44px}
   .step{width:44px;height:44px}
@@ -329,25 +358,42 @@ footer p a{color:var(--ink);text-underline-offset:2px}
   .dock-q span{font-size:.78rem;max-width:52vw;overflow:hidden;text-overflow:ellipsis}
   .quote-card{grid-template-columns:1fr;text-align:left}
   .quote-card .ctas{grid-column:1;grid-row:auto;margin-top:12px}
-  .ladder i[data-t]::after{font-size:.6rem}
-  .goals{flex-wrap:nowrap;overflow-x:auto;margin-left:-4px;padding:2px 4px;scrollbar-width:none}
-  .goals::-webkit-scrollbar{display:none}
-  .goals button{flex:none}
+  .ladder i[data-t]::after{font-size:.66rem}
+  .field-top{flex-direction:column;align-items:flex-start;gap:6px}
+  .field-top .rank{text-align:left}
   .facts{grid-template-columns:1fr 1fr}
   .fact,.fact + .fact{padding:20px 14px 18px 0;border-left:0;border-bottom:1px solid var(--line)}
   .fact:nth-child(even){padding-left:14px;border-left:1px solid var(--line)}
   .svc-main{grid-template-columns:1fr}
-  .plan.pick{margin:12px 0;padding:28px 22px}
   .block{background:var(--studio);box-shadow:0 -56px 40px -10px var(--studio)}
   #price .block{background:none;box-shadow:none}
   .steps{grid-template-columns:1fr 1fr;gap:18px 16px;margin-top:28px}
-  .steps li{padding-top:16px}
+  /* steps become frosted cards: the car drives behind them without eating the text */
+  .steps li{padding:14px 14px 16px;opacity:1;border-radius:16px;background:rgba(238,240,243,.78);
+    -webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2);box-shadow:0 0 0 1px var(--line-2)}
+  .steps li:not(.on) > *{opacity:.4;transition:opacity .5s}
+  .steps .track{display:none}
   .steps .n{margin-bottom:10px}
   .steps p{font-size:.88rem}
   .proc-head .lead{display:none}
-  .plans{grid-template-columns:1fr;border-top:0}
-  .plan,.plan + .plan{padding:28px 0;border-left:0;border-top:1px solid var(--line)}
-  footer{justify-content:center;text-align:center}
+  .plans{grid-template-columns:1fr;gap:12px;margin-top:28px;border-top:0}
+  .plan,.plan + .plan,.plan.pick{margin:0;padding:20px;border:0;border-radius:18px;background:var(--paper);box-shadow:var(--shadow), 0 0 0 1px var(--line-2);
+    display:grid;grid-template-columns:1fr auto;align-items:start;gap:10px 12px}
+  .plan.pick{box-shadow:var(--shadow), 0 0 0 2px var(--blue)}
+  .plan-top{grid-column:1;padding-top:6px}
+  .plan .cost{grid-column:2;grid-row:1;text-align:right;font-size:1.9rem}
+  .plan .cost small{display:block;margin-top:4px;font-size:.78rem}
+  .plan .save-tag{grid-column:1 / -1;margin:0;font-size:.84rem}
+  .plan ul{grid-column:1 / -1;margin:2px 0 4px;gap:7px}
+  .plan li{font-size:.92rem}
+  .plan .btn{grid-column:1 / -1;width:100%;margin-top:4px}
+  footer{justify-content:center;text-align:center;gap:12px;padding-top:16px}
+  footer p{font-size:.76rem}
+  /* closing section: tighter, so the car has a band between headline and quote */
+  #cta{padding-top:92px}
+  #cta h2{font-size:2.35rem}
+  .cta-bottom{gap:24px}
+  .quote-card{padding:18px 20px}
 }
 @media (max-width:520px){
   .bar .btn{height:36px;padding:0 14px;font-size:.86rem}
@@ -358,128 +404,132 @@ footer p a{color:var(--ink);text-underline-offset:2px}
 @media (prefers-reduced-motion:reduce){
   .split .w > span,.fade-in{transition:none!important;transform:none!important;opacity:1!important}
   .btn{transition:background-color .2s}
+  .dock,.toast,.nav,.menu-btn i,.menu-btn i::before,.skip{transition:none!important}
 }
 </style>
 </head>
 <body>
-<div class="loader" aria-hidden="true"><div><span id="lpct">Loading the garage</span><i><b id="lbar"></b></i></div></div>
+<!-- logo symbol: a solid A cut by a rising flight path, the ball leaving top right -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><mask id="markCut" maskUnits="userSpaceOnUse" x="0" y="0" width="48" height="48"><rect width="48" height="48" fill="#fff"/><path d="M-2 40C10 30 22 20 38 12" stroke="#000" stroke-width="4.6" fill="none" stroke-linecap="round"/></mask><symbol id="mark" viewBox="0 0 48 48"><path mask="url(#markCut)" fill="currentColor" d="M22 4 42 46H29.4L22 33 14.6 46H2z"/><circle cx="41" cy="9.5" r="5" fill="#FF6A1A"/></symbol></defs></svg>
+<div class="loader" aria-hidden="true"><div><span id="lpct">Apro il garage…</span><i><b id="lbar"></b></i></div></div>
 
 <canvas id="scene" aria-hidden="true"></canvas>
 
+<a class="skip" href="#main">Vai al contenuto</a>
 <header class="bar" id="bar">
-  <a class="brand" href="#hero" aria-label="Aerial, back to top">
-    <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="#14171D"/><path d="M8 21.5 16 8l8 13.5h-4.2L16 14.8l-3.8 6.7z" fill="#fff"/><circle cx="16" cy="22.6" r="2.1" fill="#FF6A1A"/></svg>
-    Aerial
+  <a class="brand" href="#hero" aria-label="Aerial, torna su">
+    <svg class="mark" viewBox="0 0 48 48" aria-hidden="true"><use href="#mark"/></svg><span aria-hidden="true">aer<b>ı</b>al</span>
   </a>
-  <nav class="nav" aria-label="Sections">
-    <a href="#services" data-nav="services">Services</a><a href="#process" data-nav="process">How it works</a><a href="#price" data-nav="price">Pricing</a><a href="#coaching" data-nav="coaching">Coaching</a><a href="#faq" data-nav="faq">FAQ</a>
+  <nav class="nav" id="nav" aria-label="Sezioni">
+    <a href="#services" data-nav="services">Servizi</a><a href="#process" data-nav="process">Come funziona</a><a href="#price" data-nav="price">Prezzi</a><a href="#coaching" data-nav="coaching">Coaching</a><a href="#faq" data-nav="faq">FAQ</a>
   </nav>
-  <a class="btn btn-blue magnetic" href="#price">Price my boost</a>
+  <a class="btn btn-blue" href="#price">Calcola il boost</a>
+  <button type="button" class="menu-btn" id="menuBtn" aria-label="Menu" aria-expanded="false" aria-controls="nav"><i></i></button>
   <i class="bar-progress" id="barp"></i>
 </header>
 
-<main>
+<main id="main" tabindex="-1">
   <!-- HERO -->
-  <section id="hero" data-anchors="hero" data-label="Overview">
+  <section id="hero" data-anchors="hero" data-label="Panoramica">
     <div class="drag-zone" id="drag" aria-hidden="true"></div>
     <div class="wrap hero-top">
-      <h1 class="split" id="h1">Your next rank, without the grind.</h1>
+      <h1 class="split" id="h1">Sali di rango, senza grindare.</h1>
     </div>
     <div class="wrap hero-bottom">
       <div class="hero-copy fade-in">
-        <p class="lead">Grand Champion and SSL players climb for you, queue with you or coach you. Every rank, every playlist, every platform.</p>
+        <p class="lead">Giocatori Gran Campione e SSL salgono per te, giocano con te o ti allenano. Da Bronzo a SSL, dall’1v1 al 3v3, su PC e console.</p>
         <div class="ctas">
-          <a class="btn btn-blue magnetic" href="#price">Price my boost</a>
-          <a class="btn btn-line" href="#services">See services</a>
+          <a class="btn btn-blue" href="#price">Calcola il boost</a>
+          <a class="btn btn-line" href="#services">Vedi i servizi</a>
         </div>
-        <p class="micro">From €1.50 per division. Pay only when a booster accepts.</p>
+        <p class="micro">Da 1,50 € a divisione. Paghi solo quando un booster accetta.</p>
       </div>
       <div class="config fade-in">
-        <div class="swatches" role="radiogroup" aria-label="Car paint" id="swatches"></div>
-        <p class="config-label"><b id="paintName">Blue team</b><span>Drag to rotate</span></p>
+        <div class="swatches" role="radiogroup" aria-label="Colore dell’auto" id="swatches"></div>
+        <p class="config-label"><b id="paintName">Squadra blu</b><span>Trascina per ruotare</span></p>
       </div>
     </div>
   </section>
 
   <!-- PROOF -->
-  <section id="proof" data-anchors="proof" data-label="Why Aerial" aria-label="Why Aerial">
+  <section id="proof" data-anchors="proof" data-label="Perché Aerial" aria-label="Perché Aerial">
     <div class="wrap block">
       <div class="facts">
-        <div class="fact"><h3>GC and SSL boosters only</h3><p>Every booster is verified at Grand Champion or above.</p></div>
-        <div class="fact"><h3>Pause anytime</h3><p>Want to play tonight? Pause, and your booster picks up after.</p></div>
-        <div class="fact"><h3>Refund per division</h3><p>Anything we don't deliver is refunded automatically.</p></div>
-        <div class="fact"><h3>Offline, in your region</h3><p>Appear-offline on, with a booster from your region.</p></div>
+        <div class="fact"><h3>Solo booster GC e SSL</h3><p>Ogni booster è verificato Gran Campione o superiore.</p></div>
+        <div class="fact"><h3>Pausa quando vuoi</h3><p>Vuoi giocare stasera? Metti in pausa, il booster riprende dopo.</p></div>
+        <div class="fact"><h3>Rimborso per divisione</h3><p>Quello che non consegniamo ti viene rimborsato in automatico.</p></div>
+        <div class="fact"><h3>Offline, nella tua regione</h3><p>“Appari offline” resta attivo e il booster gioca dalla tua regione.</p></div>
       </div>
     </div>
   </section>
 
   <!-- SERVICES -->
-  <section id="services" data-anchors="services" data-label="Services">
+  <section id="services" data-anchors="services" data-label="Servizi">
     <div class="wrap two">
       <div class="right block">
-        <h2 class="h2">Pick how you climb</h2>
-        <p class="lead" style="margin-top:18px">Hand over the controller, or keep it and queue with a pro.</p>
+        <h2 class="h2">Scegli come salire</h2>
+        <p class="lead" style="margin-top:18px">Passa il controller, oppure tienilo e gioca in coda con un pro.</p>
         <div class="svc-main">
           <article class="svc-card">
-            <h3>Rank boost</h3>
-            <p class="svc-price"><small>from</small> €1.50 <small>per division</small></p>
-            <p class="svc-desc">A booster plays on your account, offline, until you hit your target. The fastest way up.</p>
-            <button type="button" class="btn btn-line btn-sm" data-preset="solo">Price a rank boost</button>
+            <h3>Boost di rango</h3>
+            <p class="svc-price"><small>da</small> 1,50 € <small>a divisione</small></p>
+            <p class="svc-desc">Un booster gioca sul tuo account, offline, fino al rango che hai scelto.</p>
+            <button type="button" class="btn btn-line btn-sm" data-preset="solo">Calcola un boost di rango</button>
           </article>
           <article class="svc-card">
-            <h3>Duo queue</h3>
-            <p class="svc-price"><small>from</small> €2.25 <small>per division</small></p>
-            <p class="svc-desc">Keep your login and play every game alongside a Grand Champion. You learn on the way up.</p>
-            <button type="button" class="btn btn-line btn-sm" data-preset="duo">Price a duo boost</button>
+            <h3>Coda in duo</h3>
+            <p class="svc-price"><small>da</small> 2,25 € <small>a divisione</small></p>
+            <p class="svc-desc">Tieni il tuo account e gioca ogni partita insieme a un Gran Campione.</p>
+            <button type="button" class="btn btn-line btn-sm" data-preset="duo">Calcola un boost in duo</button>
           </article>
         </div>
-        <p class="svc-more">Also available</p>
+        <p class="svc-more">Disponibili anche</p>
         <ul class="svc">
-          <li><h3>Win boost</h3><p>Wins for season rewards and challenges.</p><span class="price">from €1.20<small>per win</small></span></li>
-          <li><h3>Placement matches</h3><p>Start the season at the rank you belong.</p><span class="price">from €19<small>all 10 matches</small></span></li>
-          <li><h3>Tournament carry</h3><p>A pro teammate for scheduled tournaments.</p><span class="price">from €12<small>per win</small></span></li>
+          <li><h3>Boost di vittorie</h3><p>Vittorie per le ricompense stagionali e le sfide.</p><span class="price">da 1,20 €<small>a vittoria</small></span></li>
+          <li><h3>Partite di piazzamento</h3><p>Inizia la stagione al rango che ti spetta.</p><span class="price">da 19 €<small>tutte e 10 le partite</small></span></li>
+          <li><h3>Carry nei tornei</h3><p>Un compagno pro per i tornei in calendario.</p><span class="price">da 12 €<small>a vittoria</small></span></li>
         </ul>
       </div>
     </div>
   </section>
 
   <!-- PROCESS (sticky, car drives across) -->
-  <section id="process" data-anchors="process-a,process-b" data-label="How it works">
+  <section id="process" data-anchors="process-a,process-b" data-label="Come funziona">
     <div class="sticky">
       <div class="wrap">
         <div class="proc-head">
-          <h2 class="h2">Four steps to your new rank</h2>
-          <p class="lead" style="max-width:22em">No Discord back-and-forth. The order runs itself, and you can follow every match.</p>
+          <h2 class="h2">Come funziona un ordine</h2>
+          <p class="lead" style="max-width:22em">Niente avanti e indietro su Discord. L’ordine procede da solo e puoi seguire ogni partita.</p>
         </div>
         <ol class="steps" id="steps">
-          <li><span class="n">1</span><h3>Set your goal</h3><p>Pick your ranks, playlist and extras. The price updates as you go.</p></li>
-          <li><span class="n">2</span><h3>Get matched</h3><p>A booster from your region takes the order.</p></li>
-          <li><span class="n">3</span><h3>Watch it live</h3><p>Match history, chat with your booster, and a stream if you want one.</p></li>
-          <li><span class="n">4</span><h3>Play at your new rank</h3><p>We close the order at your target. Change your password and queue up.</p></li>
+          <li><span class="n">1</span><h3>Scegli l’obiettivo</h3><p>Ranghi, playlist ed extra. Il prezzo si aggiorna mentre scegli.</p></li>
+          <li><span class="n">2</span><h3>Ti assegniamo un booster</h3><p>Un booster della tua regione prende l’ordine.</p></li>
+          <li><span class="n">3</span><h3>Seguilo in diretta</h3><p>Storico partite, chat con il booster e una diretta se la vuoi.</p></li>
+          <li><span class="n">4</span><h3>Gioca al nuovo rango</h3><p>Chiudiamo l’ordine quando arrivi all’obiettivo. Cambia la password e torna in coda.</p></li>
         </ol>
       </div>
     </div>
   </section>
 
   <!-- CALCULATOR -->
-  <section id="price" data-anchors="price" data-label="Price my boost">
+  <section id="price" data-anchors="price" data-label="Calcola il boost">
     <div class="wrap two">
       <div class="right block">
         <form class="panel" id="calc" novalidate>
-          <h2 class="h2">Price your boost</h2>
+          <h2 class="h2">Calcola il tuo boost</h2>
 
           <div class="field">
-            <div class="field-top"><label for="rFrom">Current rank</label><span class="rank"><i class="gem" id="gFrom"></i><span id="nFrom">Platinum II</span></span></div>
-            <div class="slider-row"><button type="button" class="step" data-for="rFrom" data-d="-1" aria-label="Lower current rank">−</button><div class="slider"><input id="rFrom" type="range" min="0" max="21" value="10"></div><button type="button" class="step" data-for="rFrom" data-d="1" aria-label="Raise current rank">+</button></div>
+            <div class="field-top"><label for="rFrom">Rango attuale</label><span class="rank"><i class="gem" id="gFrom"></i><span id="nFrom">Platino II</span></span></div>
+            <div class="slider-row"><button type="button" class="step" data-for="rFrom" data-d="-1" aria-label="Abbassa il rango attuale">−</button><div class="slider"><input id="rFrom" name="from" type="range" min="0" max="21" value="10"></div><button type="button" class="step" data-for="rFrom" data-d="1" aria-label="Alza il rango attuale">+</button></div>
           </div>
           <div class="field">
-            <div class="field-top"><label for="rTo">Target rank</label><span class="rank"><i class="gem" id="gTo"></i><span id="nTo">Diamond III</span></span></div>
-            <div class="slider-row"><button type="button" class="step" data-for="rTo" data-d="-1" aria-label="Lower target rank">−</button><div class="slider"><input id="rTo" type="range" min="0" max="21" value="14"></div><button type="button" class="step" data-for="rTo" data-d="1" aria-label="Raise target rank">+</button></div>
-            <div class="goals" role="group" aria-label="Quick targets">
-              <button type="button" data-goal="next">Next rank</button>
-              <button type="button" data-goal="12">Diamond</button>
-              <button type="button" data-goal="15">Champion</button>
-              <button type="button" data-goal="18">Grand Champion</button>
+            <div class="field-top"><label for="rTo">Rango obiettivo</label><span class="rank"><i class="gem" id="gTo"></i><span id="nTo">Diamante III</span></span></div>
+            <div class="slider-row"><button type="button" class="step" data-for="rTo" data-d="-1" aria-label="Abbassa il rango obiettivo">−</button><div class="slider"><input id="rTo" name="to" type="range" min="0" max="21" value="14"></div><button type="button" class="step" data-for="rTo" data-d="1" aria-label="Alza il rango obiettivo">+</button></div>
+            <div class="goals" role="group" aria-label="Obiettivi rapidi">
+              <button type="button" data-goal="next">Rango successivo</button>
+              <button type="button" data-goal="12">Diamante</button>
+              <button type="button" data-goal="15">Campione</button>
+              <button type="button" data-goal="18">Gran Campione</button>
               <button type="button" data-goal="21">SSL</button>
             </div>
             <div class="ladder" id="ladder" aria-hidden="true"></div>
@@ -496,21 +546,21 @@ footer p a{color:var(--ink);text-underline-offset:2px}
           </div>
 
           <div class="field opts">
-            <label class="opt"><span>Play with your booster<small>Duo on your own account. +50%</small></span><input type="checkbox" data-x="0.50"><i class="switch"></i></label>
-            <label class="opt"><span>Priority<small>Starts first, finishes about 25% sooner. +20%</small></span><input type="checkbox" data-x="0.20" id="prio"><i class="switch"></i></label>
-            <label class="opt"><span>Live stream<small>Watch every match as it happens. +10%</small></span><input type="checkbox" data-x="0.10"><i class="switch"></i></label>
+            <label class="opt"><span>Gioca con il booster<small>Duo sul tuo account. +50%</small></span><input type="checkbox" data-x="0.50"><i class="switch"></i></label>
+            <label class="opt"><span>Priorità<small>Parte per primo, finisce circa il 25% prima. +20%</small></span><input type="checkbox" data-x="0.20" id="prio"><i class="switch"></i></label>
+            <label class="opt"><span>Diretta<small>Guarda ogni partita in tempo reale. +10%</small></span><input type="checkbox" data-x="0.10"><i class="switch"></i></label>
           </div>
 
           <div class="total">
             <div>
-              <p class="route" id="route">Platinum II to Diamond III in 2v2</p>
-              <div class="amount-row"><span class="amount" id="amount" aria-live="polite">€0</span><s class="was" id="was"></s></div>
+              <p class="route" id="route">Da Platino II a Diamante III in 2v2</p>
+              <div class="amount-row"><span class="amount" id="amount" aria-live="polite">0 €</span><s class="was" id="was"></s></div>
               <div class="eta" id="eta"></div>
             </div>
-            <button class="btn btn-blue btn-lg magnetic" type="submit">Order boost</button>
+            <button class="btn btn-blue btn-lg" type="submit">Ordina il boost</button>
           </div>
           <p class="save" id="save" aria-live="polite"></p>
-          <p class="assure">Pay only when a booster accepts. Anything not delivered is refunded.</p>
+          <p class="assure">Paghi solo quando un booster accetta. Quello che non viene consegnato ti viene rimborsato.</p>
         </form>
       </div>
     </div>
@@ -519,76 +569,76 @@ footer p a{color:var(--ink);text-underline-offset:2px}
   <!-- COACHING -->
   <section id="coaching" data-anchors="coaching" data-label="Coaching">
     <div class="wrap block">
-      <h2 class="h2">Or get better yourself</h2>
-      <p class="lead" style="margin-top:18px">The same players, coaching you live. Replay reviews and a plan you can keep using.</p>
+      <h2 class="h2">Oppure migliora tu</h2>
+      <p class="lead" style="margin-top:18px">Gli stessi giocatori ti allenano dal vivo. Analisi dei replay e un piano che puoi continuare a usare.</p>
       <div class="plans">
         <article class="plan">
-          <div class="plan-top"><h3>Single session</h3></div>
-          <div class="cost">€25 <small>one hour</small></div>
-          <ul><li>One hour, live over voice</li><li>One replay reviewed</li><li>A drill list for the week</li></ul>
-          <a class="btn btn-line" href="#cta">Book a session</a>
+          <div class="plan-top"><h3>Sessione singola</h3></div>
+          <div class="cost">25 € <small>un’ora</small></div>
+          <ul><li>Un’ora dal vivo, in chiamata vocale</li><li>Un replay analizzato</li><li>Esercizi per la settimana</li></ul>
+          <button type="button" class="btn btn-line" data-book="Sessione singola">Prenota una sessione</button>
         </article>
         <article class="plan pick">
-          <div class="plan-top"><h3>Five sessions</h3><span class="tag">Best value</span></div>
-          <div class="cost">€109 <small>€21.80 a session</small></div>
-          <p class="save-tag">Save €16 on five single sessions</p>
-          <ul><li>Five live sessions</li><li>Unlimited replay reviews</li><li>A weekly training plan</li><li>Chat with your coach in between</li></ul>
-          <a class="btn btn-blue magnetic" href="#cta">Book five sessions</a>
+          <div class="plan-top"><h3>Cinque sessioni</h3></div>
+          <div class="cost">109 € <small>21,80 € a sessione</small></div>
+          <p class="save-tag">Risparmi 16 € rispetto a cinque sessioni singole</p>
+          <ul><li>Cinque sessioni dal vivo</li><li>Analisi dei replay illimitate</li><li>Un piano di allenamento settimanale</li><li>Chat con il coach tra una sessione e l’altra</li></ul>
+          <button type="button" class="btn btn-blue" data-book="Cinque sessioni">Prenota cinque sessioni</button>
         </article>
         <article class="plan">
-          <div class="plan-top"><h3>Season</h3></div>
-          <div class="cost">€139 <small>per month</small></div>
-          <p class="save-tag muted-tag">About €35 a week</p>
-          <ul><li>A session every week</li><li>Ten duo games a month</li><li>Tournament prep</li><li>First pick of time slots</li></ul>
-          <a class="btn btn-line" href="#cta">Start a season</a>
+          <div class="plan-top"><h3>Stagione</h3></div>
+          <div class="cost">139 € <small>al mese</small></div>
+          <p class="save-tag muted-tag">Circa 35 € a settimana</p>
+          <ul><li>Una sessione ogni settimana</li><li>Dieci partite in duo al mese</li><li>Preparazione ai tornei</li><li>Prima scelta sugli orari</li></ul>
+          <button type="button" class="btn btn-line" data-book="Stagione">Inizia una stagione</button>
         </article>
       </div>
     </div>
   </section>
 
   <!-- FAQ -->
-  <section id="faq" data-anchors="faq" data-label="Questions">
+  <section id="faq" data-anchors="faq" data-label="Domande">
     <div class="wrap two">
       <div class="left block">
-        <h2 class="h2">Questions</h2>
+        <h2 class="h2">Domande</h2>
         <div class="faq">
-          <div class="q open"><button type="button" aria-expanded="true">Do boosters use bots or scripts?<i class="pm"></i></button><div class="a"><div><p>Never. Every game is played by a person. We refuse orders that ask for macros or scripts.</p></div></div></div>
-          <div class="q"><button type="button" aria-expanded="false">Can I keep my login to myself?<i class="pm"></i></button><div class="a"><div><p>Yes. Choose duo queue or coaching. You stay on your account and play every match.</p></div></div></div>
-          <div class="q"><button type="button" aria-expanded="false">Can I play while the order is running?<i class="pm"></i></button><div class="a"><div><p>Yes. Pause the order from your dashboard, and resume it when you're done.</p></div></div></div>
-          <div class="q"><button type="button" aria-expanded="false">Which platforms do you cover?<i class="pm"></i></button><div class="a"><div><p>PC, PlayStation, Xbox and Switch, through your linked Epic Games account.</p></div></div></div>
-          <div class="q"><button type="button" aria-expanded="false">What if you don't reach my target?<i class="pm"></i></button><div class="a"><div><p>You get back the price of every division we don't deliver, to your original payment method.</p></div></div></div>
+          <div class="q open"><button type="button" aria-expanded="true">I booster usano bot o script?<i class="pm"></i></button><div class="a"><div><p>Mai. Ogni partita la gioca una persona. Rifiutiamo gli ordini che chiedono macro o script.</p></div></div></div>
+          <div class="q"><button type="button" aria-expanded="false">Posso non condividere i miei dati di accesso?<i class="pm"></i></button><div class="a"><div><p>Sì. Scegli la coda in duo o il coaching. Resti sul tuo account e giochi ogni partita.</p></div></div></div>
+          <div class="q"><button type="button" aria-expanded="false">Posso giocare mentre l’ordine è in corso?<i class="pm"></i></button><div class="a"><div><p>Sì. Metti in pausa l’ordine dalla tua dashboard e riprendilo quando hai finito.</p></div></div></div>
+          <div class="q"><button type="button" aria-expanded="false">Su quali piattaforme lavorate?<i class="pm"></i></button><div class="a"><div><p>PC, PlayStation, Xbox e Switch, tramite il tuo account Epic Games collegato.</p></div></div></div>
+          <div class="q"><button type="button" aria-expanded="false">E se non arrivate al mio obiettivo?<i class="pm"></i></button><div class="a"><div><p>Ti rimborsiamo il prezzo di ogni divisione non consegnata, sul metodo di pagamento originale.</p></div></div></div>
         </div>
       </div>
     </div>
   </section>
 
   <!-- CTA -->
-  <section id="cta" data-anchors="cta" data-label="Start">
+  <section id="cta" data-anchors="cta" data-label="Inizia">
     <div class="wrap">
-      <h2 class="split" id="ctaTitle">Start next season higher.</h2>
+      <h2 class="split" id="ctaTitle">La prossima stagione, più in alto.</h2>
     </div>
     <div class="wrap cta-bottom">
       <div class="quote-card">
-        <p class="quote-label">Your quote</p>
-        <p class="quote-route" id="qRoute">Platinum II to Diamond III in 2v2</p>
-        <p class="quote-price" id="qPrice">€22.50</p>
+        <p class="quote-label">Il tuo preventivo</p>
+        <p class="quote-route" id="qRoute">Da Platino II a Diamante III in 2v2</p>
+        <p class="quote-price" id="qPrice">22,50 €</p>
         <div class="ctas">
-          <a class="btn btn-blue btn-lg magnetic" href="#price">Order this boost</a>
-          <a class="btn btn-line" href="#price">Change it</a>
+          <button type="button" class="btn btn-blue btn-lg" id="orderQuote">Ordina questo boost</button>
+          <a class="btn btn-line" href="#price">Modifica</a>
         </div>
       </div>
       <footer>
-        <a class="brand" href="#hero" aria-label="Aerial, back to top"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="#14171D"/><path d="M8 21.5 16 8l8 13.5h-4.2L16 14.8l-3.8 6.7z" fill="#fff"/><circle cx="16" cy="22.6" r="2.1" fill="#FF6A1A"/></svg>Aerial</a>
-        <p>Aerial is not affiliated with, endorsed or sponsored by Psyonix LLC or Epic Games. Rocket League and Octane are trademarks of Psyonix LLC. Prices are indicative.<br>
-        <a href="https://sketchfab.com/3d-models/octane-rocket-league-car-9910f0a5d158425bbc7deb60c7a81f69">Octane 3D model</a> by <a href="https://sketchfab.com/fairlight51">Jako</a>, licensed under <a href="http://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>; compressed for the web.</p>
+        <a class="brand" href="#hero" aria-label="Aerial, torna su"><svg class="mark" viewBox="0 0 48 48" aria-hidden="true"><use href="#mark"/></svg><span aria-hidden="true">aer<b>ı</b>al</span></a>
+        <p>Aerial non è affiliato, approvato o sponsorizzato da Psyonix LLC o Epic Games. Rocket League e Octane sono marchi di Psyonix LLC. Prezzi indicativi.<br>
+        <a href="https://sketchfab.com/3d-models/octane-rocket-league-car-9910f0a5d158425bbc7deb60c7a81f69">Modello 3D Octane</a> di <a href="https://sketchfab.com/fairlight51">Jako</a>, con licenza <a href="http://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>; compresso per il web.</p>
       </footer>
     </div>
   </section>
 </main>
 
 <div class="dock" id="dock">
-  <div class="dock-q"><span id="dockRoute">Platinum II to Diamond III</span><b id="dockPrice">€22.50</b></div>
-  <a class="btn btn-blue" href="#price">See my quote</a>
+  <div class="dock-q"><span id="dockRoute">Da Platino II a Diamante III</span><b id="dockPrice">22,50 €</b></div>
+  <a class="btn btn-blue" href="#price">Vedi il preventivo</a>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -609,7 +659,7 @@ footer p a{color:var(--ink);text-underline-offset:2px}
   });
   let revealed = false;
   window.revealHero = () => { if (revealed) return; revealed = true; document.documentElement.classList.add('loaded'); $('#h1').classList.add('on'); };
-  setTimeout(window.revealHero, 9000); // safety net if 3D never loads
+  setTimeout(window.revealHero, 5000); // safety net if 3D never loads
   new IntersectionObserver(es => es.forEach(e => e.isIntersecting && e.target.classList.add('on')), { threshold: .4 }).observe($('#ctaTitle'));
 
   // header: solid on scroll, current section, progress; process steps
@@ -650,23 +700,45 @@ footer p a{color:var(--ink);text-underline-offset:2px}
   });
   addEventListener('scroll', onScroll, { passive: true }); addEventListener('resize', onScroll); onScroll();
 
-  // magnetic buttons
-  if (!reduced && matchMedia('(pointer:fine)').matches) $$('.magnetic').forEach(b => {
-    b.addEventListener('pointermove', e => { const r = b.getBoundingClientRect();
-      b.style.setProperty('--mx', ((e.clientX - r.left - r.width / 2) * .18).toFixed(1) + 'px');
-      b.style.setProperty('--my', ((e.clientY - r.top - r.height / 2) * .3).toFixed(1) + 'px'); });
-    b.addEventListener('pointerleave', () => { b.style.setProperty('--mx', '0px'); b.style.setProperty('--my', '0px'); });
-  });
+  // mobile menu
+  const menuBtn = $('#menuBtn');
+  const setMenu = open => { bar.classList.toggle('open', open); menuBtn.setAttribute('aria-expanded', open); };
+  menuBtn.addEventListener('click', () => setMenu(!bar.classList.contains('open')));
+  navLinks.forEach(a => a.addEventListener('click', () => setMenu(false)));
+  addEventListener('keydown', e => { if (e.key === 'Escape' && bar.classList.contains('open')) { setMenu(false); menuBtn.focus(); } });
+  addEventListener('click', e => { if (!bar.contains(e.target)) setMenu(false); });
+  matchMedia('(min-width:961px)').addEventListener('change', () => setMenu(false));
 
-  // FAQ
+  // radio groups: arrow keys move the choice, Tab enters on the checked one (ARIA radio pattern)
+  function roving(group) {
+    const items = () => $$('[role=radio]', group);
+    const sync = () => items().forEach(x => (x.tabIndex = x.getAttribute('aria-checked') === 'true' ? 0 : -1));
+    group.addEventListener('click', sync);
+    group.addEventListener('keydown', e => {
+      const d = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key]; if (!d) return;
+      e.preventDefault();
+      const list = items(), n = list[(list.indexOf(document.activeElement) + d + list.length) % list.length];
+      n.click(); n.focus();
+    });
+    sync();
+  }
+
+  // FAQ (closed answers stay out of the tab order and the screen-reader flow)
+  const faqSync = () => $$('.q').forEach(x => (x.querySelector('.a').inert = !x.classList.contains('open')));
   $$('.q button').forEach(btn => btn.addEventListener('click', () => {
     const q = btn.parentElement, open = !q.classList.contains('open');
     $$('.q').forEach(x => { x.classList.remove('open'); x.firstElementChild.setAttribute('aria-expanded', 'false'); });
     if (open) { q.classList.add('open'); btn.setAttribute('aria-expanded', 'true'); }
+    faqSync();
   }));
+  faqSync();
+
+  // checkout and booking aren't wired up yet: say so instead of jumping somewhere unrelated
+  $$('[data-book]').forEach(b => b.addEventListener('click', () => toast(`${b.dataset.book}: la prenotazione non è ancora collegata. Questa pagina è un’anteprima.`)));
+  $('#orderQuote').addEventListener('click', () => $('#calc').requestSubmit());
 
   // paint swatches (the 3D scene listens for 'paint')
-  const PAINTS = [['Blue team', '#1E63FF'], ['Orange team', '#FF6A1A'], ['Titanium', '#C9CDD3'], ['Graphite', '#2B2F37'], ['Violet', '#6C4CF5']];
+  const PAINTS = [['Squadra blu', '#1E63FF'], ['Squadra arancione', '#FF6A1A'], ['Titanio', '#C9CDD3'], ['Grafite', '#2B2F37'], ['Viola', '#6C4CF5']];
   PAINTS.forEach(([n, c], i) => {
     const b = document.createElement('button');
     b.className = 'sw'; b.type = 'button'; b.style.setProperty('--c', c);
@@ -678,6 +750,7 @@ footer p a{color:var(--ink);text-underline-offset:2px}
     };
     $('#swatches').appendChild(b);
   });
+  roving($('#swatches'));
 
   // ---------- calculator ----------
   // € per division climbed INTO each rank (2v2 base); a list sets I, II, III separately.
@@ -685,20 +758,23 @@ footer p a{color:var(--ink);text-underline-offset:2px}
   // Neonsect and Eldorado offers (GC3 → SSL: $28 cheapest, $46 recommended), Nov 2026.
   // Mid-market: under the "recommended" marketplace price, above the cheapest sellers.
   const TIERS = [
-    ['Bronze', '#D9A178', '#9A5B33', 1.5], ['Silver', '#E9EDF3', '#9AA5B8', 2], ['Gold', '#FFD978', '#D7961A', 3],
-    ['Platinum', '#A8EEFF', '#3BA5CC', 4.5], ['Diamond', '#9DBBFF', '#3463E6', 6], ['Champion', '#D9B3FF', '#8048DE', 11],
-    ['Grand Champion', '#FF9EB1', '#D42953', [20, 24, 28]],
+    ['Bronzo', '#D9A178', '#9A5B33', 1.5], ['Argento', '#E9EDF3', '#9AA5B8', 2], ['Oro', '#FFD978', '#D7961A', 3],
+    ['Platino', '#A8EEFF', '#3BA5CC', 4.5], ['Diamante', '#9DBBFF', '#3463E6', 6], ['Campione', '#D9B3FF', '#8048DE', 11],
+    ['Gran Campione', '#FF9EB1', '#D42953', [20, 24, 28]],
   ];
   const BUNDLE = { from: 6, off: 0.10 };   // 10% off orders of 6+ divisions
   const RANKS = [];
   TIERS.forEach(([n, c1, c2, step], t) => ['I', 'II', 'III'].forEach((d, i) => RANKS.push({ label: `${n} ${d}`, c1, c2, step: Array.isArray(step) ? step[i] : step, tier: t })));
-  RANKS.push({ label: 'Supersonic Legend', c1: '#FFFFFF', c2: '#8E9BC4', step: 35, tier: 7 });
+  RANKS.push({ label: 'Leggenda Supersonica', c1: '#FFFFFF', c2: '#8E9BC4', step: 35, tier: 7 });
 
   const rFrom = $('#rFrom'), rTo = $('#rTo');
+  const eur2 = new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' });
+  const eur0 = new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+  const money = v => (v < 100 ? eur2 : eur0).format(v);
   let mult = 1, shown = 0, anim;
   const ladder = $('#ladder'), ladderCells = RANKS.map((r, i) => {
     const c = document.createElement('i'); c.style.setProperty('--c1', r.c1); c.style.setProperty('--c2', r.c2);
-    if (i % 3 === 0) c.dataset.t = ['B', 'S', 'G', 'P', 'D', 'C', 'GC', 'SSL'][r.tier];
+    if (i % 3 === 0) c.dataset.t = ['B', 'A', 'O', 'P', 'D', 'C', 'GC', 'SSL'][r.tier];
     ladder.appendChild(c); return c;
   });
   function show(gem, name, input, r) {
@@ -712,7 +788,7 @@ footer p a{color:var(--ink);text-underline-offset:2px}
     const step = now => {
       const k = dur ? Math.min(1, (now - t0) / dur) : 1, e = 1 - Math.pow(1 - k, 3);
       shown = from + (v - from) * e;
-      $('#amount').textContent = '€' + (shown < 100 ? shown.toFixed(2) : Math.round(shown).toLocaleString('en'));
+      $('#amount').textContent = money(shown);
       if (k < 1) anim = requestAnimationFrame(step);
     };
     anim = requestAnimationFrame(step);
@@ -731,21 +807,21 @@ footer p a{color:var(--ink);text-underline-offset:2px}
     let extra = 0; $$('#calc input[type=checkbox]:checked').forEach(c => extra += +c.dataset.x);
     const n = b - a, bundle = n >= BUNDLE.from, full = base * mult * (1 + extra);
     tweenTo(full * (bundle ? 1 - BUNDLE.off : 1));
-    $('#was').textContent = bundle ? '€' + (full < 100 ? full.toFixed(2) : Math.round(full)) : '';
+    $('#was').textContent = bundle ? money(full) : '';
     const pl = $('#playlist button[aria-checked="true"]').textContent;
-    $('#route').textContent = `${RANKS[a].label} to ${RANKS[b].label} in ${pl}`;
+    $('#route').textContent = `Da ${RANKS[a].label} a ${RANKS[b].label} in ${pl}`;
     // boosters play about 10 hours a day; priority finishes ~25% sooner
     const h = hours * ($('#prio').checked ? 0.75 : 1);
-    const when = h <= 12 ? `${Math.max(2, Math.round(h))}–${Math.round(h * 1.5) + 2} hours` : `${Math.ceil(h / 10)}–${Math.ceil(h / 10) + 1} days`;
-    $('#eta').textContent = `${n} division${n > 1 ? 's' : ''}, about ${when}`;
-    const final = full * (bundle ? 1 - BUNDLE.off : 1), money = v => '€' + (v < 100 ? v.toFixed(2) : Math.round(v));
-    $('#save').textContent = bundle ? `You save ${money(full - final)}. Orders of ${BUNDLE.from}+ divisions are ${BUNDLE.off * 100}% off.`
-      : n === BUNDLE.from - 1 ? `Add one more division and the whole order is ${BUNDLE.off * 100}% off.` : '';
+    const when = h <= 12 ? `${Math.max(2, Math.round(h))}–${Math.round(h * 1.5) + 2} ore` : `${Math.ceil(h / 10)}–${Math.ceil(h / 10) + 1} giorni`;
+    $('#eta').textContent = `${n} division${n > 1 ? 'i' : 'e'}, circa ${when}`;
+    const final = full * (bundle ? 1 - BUNDLE.off : 1);
+    $('#save').textContent = bundle ? `Risparmi ${money(full - final)}. Gli ordini da ${BUNDLE.from} divisioni in su hanno il ${BUNDLE.off * 100}% di sconto.`
+      : n === BUNDLE.from - 1 ? `Aggiungi una divisione e tutto l’ordine ha il ${BUNDLE.off * 100}% di sconto.` : '';
     $('#save').classList.toggle('nudge', !bundle && n === BUNDLE.from - 1);
     // ladder: where you are, where you're going
     ladderCells.forEach((c, i) => { c.classList.toggle('in', i > a && i <= b); c.classList.toggle('from', i === a); c.classList.toggle('to', i === b); });
     // share the quote with the dock and the closing section; remember it for next visit
-    window.quote = { route: `${RANKS[a].label} to ${RANKS[b].label}`, pl, price: money(final) };
+    window.quote = { route: `Da ${RANKS[a].label} a ${RANKS[b].label}`, pl, price: money(final) };
     dispatchEvent(new CustomEvent('quote'));
     try { localStorage.setItem('aerial-quote', JSON.stringify({ a, b, pl: $$('button', $('#playlist')).findIndex(x => x.getAttribute('aria-checked') === 'true'), x: $$('#calc input[type=checkbox]').map(c => c.checked) })); } catch (e) {}
     if (src) dispatchEvent(new CustomEvent('calc'));
@@ -777,7 +853,7 @@ footer p a{color:var(--ink);text-underline-offset:2px}
     $$('[data-goal]').forEach(x => x.classList.toggle('on', x === btn));
   }));
   rTo.addEventListener('input', () => $$('[data-goal]').forEach(x => x.classList.remove('on')));
-  $('#calc').addEventListener('submit', e => { e.preventDefault(); toast('Checkout isn’t connected yet. This page is a preview.'); });
+  $('#calc').addEventListener('submit', e => { e.preventDefault(); toast('Il pagamento non è ancora collegato. Questa pagina è un’anteprima.'); });
   // restore the last quote (picks up where the visitor left off)
   try {
     const q = JSON.parse(localStorage.getItem('aerial-quote') || 'null');
@@ -787,6 +863,7 @@ footer p a{color:var(--ink);text-underline-offset:2px}
       $$('#calc input[type=checkbox]').forEach((c, i) => (c.checked = !!(q.x || [])[i]));
     }
   } catch (e) {}
+  roving(seg);
   calc();
 })();
 </script>
@@ -807,6 +884,7 @@ document.addEventListener('click', e => {
   const el = document.querySelector(a.getAttribute('href')); if (!el) return;
   e.preventDefault();
   if (window.lenis) window.lenis.scrollTo(el, { duration: 1.6 }); else el.scrollIntoView({ behavior: 'smooth' });
+  el.focus({ preventScroll: true });   // keyboard users continue from where they jumped (no-op on non-focusable targets)
 });
 </script>
 
@@ -846,7 +924,7 @@ const MODEL = {
 };
 
 const $ = s => document.querySelector(s);
-const setLoad = v => { $('#lbar').style.setProperty('--l', v); $('#lpct').textContent = v < 1 ? `Loading the garage ${Math.round(v * 100)}%` : 'Ready'; };
+const setLoad = v => { $('#lbar').style.setProperty('--l', v); $('#lpct').textContent = v < 1 ? `Apro il garage… ${Math.round(v * 100)}%` : 'Pronto'; };
 setLoad(.35);
 
 const isTouch = matchMedia('(pointer:coarse)').matches;
@@ -1169,7 +1247,7 @@ function flameStep(dt, amt, s, t) {
 }
 
 /* ---------------- model loading ---------------- */
-let customPaint = [], modelReady = !MODEL.url;
+let customPaint = [], modelReady = !MODEL.url, body = car;   // body: the visible car, used to keep it clear of text
 const AXIS_X = new THREE.Vector3(1, 0, 0);
 wheels.forEach(w => (w.userData.axis = AXIS_X));
 const isAncestor = (a, o) => { while (o) { if (o === a) return true; o = o.parent; } return false; };
@@ -1214,13 +1292,14 @@ function useModel(root) {
     return holder;
   });
   setNozzles(MODEL.nozzles, MODEL.vent);
-  car.visible = false; pivot.add(wrap);
+  car.visible = false; pivot.add(wrap); body = wrap;
+  measure();
 }
 function startDrive() { modelReady = true; age = 0; cur = reduced ? stateOf('hero') : { ...stateOf('hero'), x: -1.5, ry: Math.PI / 2 - 0.2, boost: 1 }; }
 if (MODEL.url) {
   car.visible = false;
   const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
-  const fail = () => { car.visible = true; startDrive(); };
+  const fail = () => { car.visible = true; measure(); startDrive(); };
   const done = g => { useModel(g.scene); startDrive(); };
   if (MODEL.url.endsWith('.js')) {
     // a JS module holding the .glb in base64, for hosts that don't serve .glb files
@@ -1253,17 +1332,65 @@ const DESK = {
 const MOB = {
   hero:        { x: 0,    y: 0.05,  s: 1.05 },
   proof:       { x: 0,    y: 0.30,  s: 0.85 },
-  services:    { x: 0,    y: 0.38,  s: 0.92 },
+  services:    { x: 0,    y: 0.24,  s: 0.84 },
   'process-a': { x: -0.3, y: -0.62, s: 0.62 },
   'process-b': { x: 0.3,  y: -0.62, s: 0.62 },
-  price:       { x: 0,    y: 0.38,  s: 0.92 },
+  price:       { x: 0,    y: 0.24,  s: 0.84 },
   coaching:    { x: 0,    y: 2.4,   s: 0.8 },
-  faq:         { x: 0,    y: 0.38,  s: 0.92 },
+  faq:         { x: 0,    y: 0.24,  s: 0.84 },
   cta:         { x: 0,    y: 0.36,  s: 0.72 },
 };
 const secs = [...document.querySelectorAll('main > section')];
 let anchors = [], mobile = false, halfW = 4, halfH = 2.5;
-const stateOf = id => mobile ? { ...DESK[id], ...MOB[id] } : { ...DESK[id] };
+const FIT = {};   // per-pose { y, s } overrides that keep the car off the text (see fit())
+const stateOf = id => Object.assign(mobile ? { ...DESK[id], ...MOB[id] } : { ...DESK[id] }, FIT[id]);
+
+/* Keep-clear zones: for each pose, the free band (px from the viewport top, at the scroll
+   where that pose is reached) the car must stay inside, so it never sits behind copy.
+   S = scrollY at that pose.                                                            */
+const docTop = s => document.querySelector(s).getBoundingClientRect().top + scrollY;
+const docBot = s => document.querySelector(s).getBoundingClientRect().bottom + scrollY;
+const DOCK_H = 88;   // the floating quote bar at the bottom
+const stepsZone = () => {
+  const st = $('#steps').getBoundingClientRect(), sk = $('#process .sticky').getBoundingClientRect();
+  return [st.bottom - sk.top, innerHeight - DOCK_H];   // under the steps while the section is pinned
+};
+const CLEAR = {
+  hero:        S => [docBot('#h1') - S, docTop('.hero-bottom') - S],
+  proof:       S => [68, docTop('.facts') - S],
+  'process-a': stepsZone,
+  'process-b': stepsZone,
+  cta:         S => [docBot('#ctaTitle') - S, docTop('.quote-card') - S],
+};
+const _box = new THREE.Box3(), _p = new THREE.Vector3();
+function spanAt(st) {   // the car's vertical extent on screen (NDC) for a pose at y = 0
+  rig.position.set(st.x * halfW, LOOK.y - 0.78 * st.s, 0); rig.scale.setScalar(st.s);
+  pivot.position.set(0, 0, 0); pivot.rotation.set(st.rx, st.ry, st.rz);
+  rig.updateMatrixWorld(true);
+  _box.setFromObject(body);
+  let lo = Infinity, hi = -Infinity;
+  for (let i = 0; i < 8; i++) {
+    _p.set(i & 1 ? _box.max.x : _box.min.x, i & 2 ? _box.max.y : _box.min.y, i & 4 ? _box.max.z : _box.min.z).project(camera);
+    lo = Math.min(lo, _p.y); hi = Math.max(hi, _p.y);
+  }
+  return [lo, hi];
+}
+function fit() {
+  for (const k in FIT) delete FIT[k];
+  const vh = innerHeight, ndc = px => 1 - 2 * px / vh, pad = 28 / vh;   // 14px breathing room
+  const maxS = document.documentElement.scrollHeight - vh;
+  anchors.forEach(a => {
+    if (!CLEAR[a.id]) return;
+    const [t, b] = CLEAR[a.id](Math.min(maxS, Math.max(0, a.y - vh / 2))), top = ndc(t) - pad, bot = ndc(b) + pad;
+    const st = stateOf(a.id);
+    let [lo, hi] = spanAt(st), s = st.s, y = st.y;
+    if (top - bot < 0.1) { FIT[a.id] = { y: -1.1 - hi, s }; return; }   // no room: drive it out of view rather than cover text
+    if (hi - lo > top - bot) {     // too big for the gap: shrink it and centre it
+      const k = (top - bot) / (hi - lo); s *= k; lo *= k; hi *= k; y = (top + bot - hi - lo) / 2;
+    } else y = Math.min(top - hi, Math.max(bot - lo, y));   // fits: nudge only as far as needed
+    FIT[a.id] = { y, s };
+  });
+}
 function measure() {
   anchors = [];
   const vh = innerHeight;
@@ -1273,6 +1400,7 @@ function measure() {
     if (ids.length === 1) anchors.push({ y: top + H / 2, id: ids[0], sec });
     else { const span = Math.max(1, H - vh); ids.forEach((id, i) => anchors.push({ y: top + vh / 2 + span * (0.08 + 0.84 * i / (ids.length - 1)), id, sec })); }
   });
+  fit();
 }
 const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 function target() {
