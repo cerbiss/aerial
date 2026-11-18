@@ -585,18 +585,19 @@ footer p a{color:var(--ink);text-underline-offset:2px}
   });
 
   // ---------- calculator ----------
-  // € per division climbed INTO each tier (2v2 base). Set against public prices
-  // from buyboosting, PlayHub, PlayerAuctions and Kinguin, Nov 2026: mid-market,
-  // a little above the cheapest marketplaces for vetted GC/SSL boosters.
+  // € per division climbed INTO each rank (2v2 base); a list sets I, II, III separately.
+  // Set against public prices from buyboosting, PlayHub, PlayerAuctions, Kinguin,
+  // Neonsect and Eldorado offers (GC3 → SSL: $28 cheapest, $46 recommended), Nov 2026.
+  // Mid-market: under the "recommended" marketplace price, above the cheapest sellers.
   const TIERS = [
     ['Bronze', '#D9A178', '#9A5B33', 1.5], ['Silver', '#E9EDF3', '#9AA5B8', 2], ['Gold', '#FFD978', '#D7961A', 3],
     ['Platinum', '#A8EEFF', '#3BA5CC', 4.5], ['Diamond', '#9DBBFF', '#3463E6', 6], ['Champion', '#D9B3FF', '#8048DE', 11],
-    ['Grand Champion', '#FF9EB1', '#D42953', 28],
+    ['Grand Champion', '#FF9EB1', '#D42953', [20, 24, 28]],
   ];
   const BUNDLE = { from: 6, off: 0.10 };   // 10% off orders of 6+ divisions
   const RANKS = [];
-  TIERS.forEach(([n, c1, c2, step], t) => ['I', 'II', 'III'].forEach(d => RANKS.push({ label: `${n} ${d}`, c1, c2, step, tier: t })));
-  RANKS.push({ label: 'Supersonic Legend', c1: '#FFFFFF', c2: '#8E9BC4', step: 85, tier: 7 });
+  TIERS.forEach(([n, c1, c2, step], t) => ['I', 'II', 'III'].forEach((d, i) => RANKS.push({ label: `${n} ${d}`, c1, c2, step: Array.isArray(step) ? step[i] : step, tier: t })));
+  RANKS.push({ label: 'Supersonic Legend', c1: '#FFFFFF', c2: '#8E9BC4', step: 35, tier: 7 });
 
   const rFrom = $('#rFrom'), rTo = $('#rTo');
   [$('#ticks1'), $('#ticks2')].forEach(t => { for (let i = 0; i < RANKS.length; i++) { const k = document.createElement('i'); if (i % 3 === 0) k.className = 't'; t.appendChild(k); } });
@@ -627,7 +628,7 @@ footer p a{color:var(--ink);text-underline-offset:2px}
     show($('#gFrom'), $('#nFrom'), rFrom, RANKS[a]);
     show($('#gTo'), $('#nTo'), rTo, RANKS[b]);
     let base = 0, hours = 0;
-    for (let i = a; i < b; i++) { base += RANKS[i + 1].step; hours += 1.2 + RANKS[i + 1].tier * .8; }
+    for (let i = a; i < b; i++) { const r = RANKS[i + 1]; base += r.step; hours += r.tier === 7 ? 16 : 1.2 + r.tier * .8; }   // SSL is a long, slow climb
     let extra = 0; $$('#calc input[type=checkbox]:checked').forEach(c => extra += +c.dataset.x);
     const n = b - a, bundle = n >= BUNDLE.from, full = base * mult * (1 + extra);
     tweenTo(full * (bundle ? 1 - BUNDLE.off : 1));
