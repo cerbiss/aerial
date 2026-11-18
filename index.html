@@ -100,7 +100,8 @@ section{position:relative}
 .sw:hover{transform:scale(1.08)}
 .sw[aria-checked="true"]::after{opacity:1;transform:none}
 .sw::before{content:"";position:absolute;inset:0;border-radius:50%;background:linear-gradient(150deg,rgba(255,255,255,.55),rgba(255,255,255,0) 45%,rgba(0,0,0,.18))}
-.config-label{font-size:.86rem;color:var(--graphite);display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.config-label{font-size:.86rem;color:var(--graphite);display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.config-label span::before{content:"";display:inline-block;width:3px;height:3px;border-radius:50%;background:var(--line);margin:0 10px 3px 0}
 .config-label b{color:var(--ink);font-weight:600}
 .drag-zone{position:absolute;left:12%;right:12%;top:34%;bottom:22%;cursor:grab;touch-action:pan-y;z-index:0}
 .drag-zone.dragging{cursor:grabbing}
@@ -135,7 +136,7 @@ section{position:relative}
 .svc-main{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:36px}
 .svc-card{background:var(--paper);border-radius:18px;box-shadow:var(--shadow), 0 0 0 1px var(--line-2);padding:24px;display:flex;flex-direction:column;gap:10px;
   transition:transform .5s var(--ease), box-shadow .3s}
-.svc-card:hover{transform:translateY(-3px);box-shadow:0 1px 2px rgba(20,23,29,.05), 0 30px 50px -24px rgba(20,23,29,.28), 0 0 0 1px var(--line)}
+.svc-card:hover{box-shadow:var(--shadow), 0 0 0 1px #C9CED6}
 .svc-card h3{font-size:1.3rem;letter-spacing:-.02em}
 .svc-price{font-size:1.7rem;font-weight:640;letter-spacing:-.03em;line-height:1.1;font-variation-settings:"wdth" 125}
 .svc-price small{font-size:.82rem;font-weight:400;letter-spacing:0;color:var(--graphite);font-variation-settings:"wdth" 100}
@@ -146,9 +147,9 @@ section{position:relative}
 
 .micro{font-size:.88rem;color:var(--graphite);margin-top:-6px}
 /* quick targets */
-.goals{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:18px}
+.goals{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:14px}
 .goals-label{font-size:.9rem;color:var(--graphite);margin-right:2px;white-space:nowrap;flex:none}
-.goals button{border:0;cursor:pointer;height:36px;padding:0 14px;border-radius:999px;font-size:.88rem;font-weight:600;background:var(--studio);color:var(--ink);transition:background-color .2s, color .2s, transform .3s var(--ease)}
+.goals button{border:0;cursor:pointer;height:32px;padding:0 12px;border-radius:999px;font-size:.84rem;font-weight:500;background:var(--studio);color:var(--ink);transition:background-color .2s, color .2s, transform .3s var(--ease)}
 .goals button:hover{background:#E3E7ED}
 .goals button.on{background:var(--ink);color:#fff}
 .goals button:active{transform:scale(.96)}
@@ -166,11 +167,10 @@ section{position:relative}
 .ladder i.to{box-shadow:0 0 0 2px var(--paper), 0 0 0 3.5px var(--ink)}
 .ladder i[data-t]::after{content:attr(data-t);position:absolute;top:13px;left:0;font-size:.68rem;font-style:normal;color:var(--graphite);font-variation-settings:"wdth" 100}
 /* savings + assurance */
-.save{margin-top:10px;font-size:.9rem;font-weight:600;color:#0E8A4F;min-height:1.4em}
+.save{margin-top:10px;font-size:.88rem;font-weight:600;color:#0E8A4F}
+.save:empty{display:none}
 .save.nudge{color:var(--blue)}
-.assure{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:6px 18px}
-.assure li{display:flex;align-items:center;gap:8px;font-size:.84rem;color:var(--graphite)}
-.assure li::before{content:"";width:9px;height:5px;border-left:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink);transform:rotate(-45deg) translateY(-2px)}
+.assure{margin-top:12px;font-size:.84rem;color:var(--graphite)}
 /* coaching anchors */
 .save-tag{font-size:.86rem;font-weight:600;color:#0E8A4F;margin-top:-4px}
 .save-tag.muted-tag{color:var(--graphite);font-weight:500}
@@ -223,9 +223,6 @@ section{position:relative}
 .rank{display:flex;align-items:center;gap:10px;font-weight:600;font-variation-settings:"wdth" 110}
 .gem{width:14px;height:14px;border-radius:4px;transform:rotate(45deg);background:linear-gradient(135deg,var(--c1),var(--c2));box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
 .slider{position:relative;height:30px;display:flex;align-items:center}
-.slider .ticks{position:absolute;left:11px;right:11px;top:50%;height:10px;margin-top:-5px;display:flex;justify-content:space-between;pointer-events:none}
-.slider .ticks i{width:1px;background:var(--line)}
-.slider .ticks i.t{background:#AEB4BE}
 input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:2px;margin:0;background:linear-gradient(to right,var(--fill) 0 var(--pct),var(--line) var(--pct) 100%);border-radius:2px;outline:none;position:relative;cursor:pointer}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 0 0 1px var(--line),0 2px 6px rgba(20,23,29,.18);transition:transform .25s var(--ease)}
 input[type=range]::-moz-range-thumb{width:22px;height:22px;border:0;border-radius:50%;background:#fff;box-shadow:0 0 0 1px var(--line),0 2px 6px rgba(20,23,29,.18)}
@@ -325,7 +322,7 @@ footer p a{color:var(--ink);text-underline-offset:2px}
   .sw{width:36px;height:36px}
   .seg button{height:44px}
   .step{width:44px;height:44px}
-  .goals button{height:40px}
+  .goals button{height:38px}
   .dock{left:12px;right:12px;bottom:12px;transform:translateY(calc(100% + 30px));justify-content:space-between}
   .dock.show{transform:none}
   .dock-q{flex-direction:column;gap:0;align-items:flex-start;overflow:hidden}
@@ -390,16 +387,16 @@ footer p a{color:var(--ink);text-underline-offset:2px}
     </div>
     <div class="wrap hero-bottom">
       <div class="hero-copy fade-in">
-        <p class="lead">Boosts, duo games and coaching from Grand Champion and Supersonic Legend players. Every rank from Bronze up, on PC, PlayStation, Xbox and Switch.</p>
+        <p class="lead">Grand Champion and SSL players climb for you, queue with you or coach you. Every rank, every playlist, every platform.</p>
         <div class="ctas">
           <a class="btn btn-blue magnetic" href="#price">Price my boost</a>
           <a class="btn btn-line" href="#services">See services</a>
         </div>
-        <p class="micro">From €1.50 per division. You only pay once a booster accepts your order.</p>
+        <p class="micro">From €1.50 per division. Pay only when a booster accepts.</p>
       </div>
       <div class="config fade-in">
         <div class="swatches" role="radiogroup" aria-label="Car paint" id="swatches"></div>
-        <p class="config-label"><span>Paint: <b id="paintName">Blue team</b></span><span>Drag the car to turn it</span></p>
+        <p class="config-label"><b id="paintName">Blue team</b><span>Drag to rotate</span></p>
       </div>
     </div>
   </section>
@@ -408,10 +405,10 @@ footer p a{color:var(--ink);text-underline-offset:2px}
   <section id="proof" data-anchors="proof" data-label="Why Aerial" aria-label="Why Aerial">
     <div class="wrap block">
       <div class="facts">
-        <div class="fact"><h3>Grand Champion and SSL only</h3><p>Every booster is verified at Grand Champion or higher before their first order.</p></div>
-        <div class="fact"><h3>Pause whenever you want</h3><p>Want to play tonight? Pause the order and your booster picks up after.</p></div>
-        <div class="fact"><h3>Refund per division</h3><p>Any division that isn't delivered is refunded automatically.</p></div>
-        <div class="fact"><h3>Offline and region-matched</h3><p>Boosters play from your region with appear-offline on.</p></div>
+        <div class="fact"><h3>GC and SSL boosters only</h3><p>Every booster is verified at Grand Champion or above.</p></div>
+        <div class="fact"><h3>Pause anytime</h3><p>Want to play tonight? Pause, and your booster picks up after.</p></div>
+        <div class="fact"><h3>Refund per division</h3><p>Anything we don't deliver is refunded automatically.</p></div>
+        <div class="fact"><h3>Offline, in your region</h3><p>Appear-offline on, with a booster from your region.</p></div>
       </div>
     </div>
   </section>
@@ -421,26 +418,26 @@ footer p a{color:var(--ink);text-underline-offset:2px}
     <div class="wrap two">
       <div class="right block">
         <h2 class="h2">Pick how you climb</h2>
-        <p class="lead" style="margin-top:18px">Hand your account to a booster, or keep it and play every game next to one.</p>
+        <p class="lead" style="margin-top:18px">Hand over the controller, or keep it and queue with a pro.</p>
         <div class="svc-main">
           <article class="svc-card">
             <h3>Rank boost</h3>
             <p class="svc-price"><small>from</small> €1.50 <small>per division</small></p>
-            <p class="svc-desc">A booster plays on your account, appear-offline on, until you reach your target. The fastest way up.</p>
+            <p class="svc-desc">A booster plays on your account, offline, until you hit your target. The fastest way up.</p>
             <button type="button" class="btn btn-line btn-sm" data-preset="solo">Price a rank boost</button>
           </article>
           <article class="svc-card">
             <h3>Duo queue</h3>
             <p class="svc-price"><small>from</small> €2.25 <small>per division</small></p>
-            <p class="svc-desc">Keep your login and queue with a Grand Champion. You play every game and learn while you climb.</p>
+            <p class="svc-desc">Keep your login and play every game alongside a Grand Champion. You learn on the way up.</p>
             <button type="button" class="btn btn-line btn-sm" data-preset="duo">Price a duo boost</button>
           </article>
         </div>
         <p class="svc-more">Also available</p>
         <ul class="svc">
-          <li><h3>Win boost</h3><p>Wins for season rewards, challenges and the last push before reset.</p><span class="price">from €1.20<small>per win</small></span></li>
-          <li><h3>Placement matches</h3><p>Start the season where you belong, not three divisions below.</p><span class="price">from €19<small>all 10 matches</small></span></li>
-          <li><h3>Tournament carry</h3><p>A pro team-mate for scheduled tournaments, for titles and credits.</p><span class="price">from €12<small>per tournament win</small></span></li>
+          <li><h3>Win boost</h3><p>Wins for season rewards and challenges.</p><span class="price">from €1.20<small>per win</small></span></li>
+          <li><h3>Placement matches</h3><p>Start the season at the rank you belong.</p><span class="price">from €19<small>all 10 matches</small></span></li>
+          <li><h3>Tournament carry</h3><p>A pro teammate for scheduled tournaments.</p><span class="price">from €12<small>per win</small></span></li>
         </ul>
       </div>
     </div>
@@ -451,14 +448,14 @@ footer p a{color:var(--ink);text-underline-offset:2px}
     <div class="sticky">
       <div class="wrap">
         <div class="proc-head">
-          <h2 class="h2">From order to new rank</h2>
-          <p class="lead" style="max-width:24em">No back-and-forth on Discord. The order runs itself and you can follow every match.</p>
+          <h2 class="h2">Four steps to your new rank</h2>
+          <p class="lead" style="max-width:22em">No Discord back-and-forth. The order runs itself, and you can follow every match.</p>
         </div>
         <ol class="steps" id="steps">
-          <li><span class="n">1</span><h3>Choose your target</h3><p>Pick your rank, playlist and extras. The price updates as you go.</p></li>
-          <li><span class="n">2</span><h3>Get matched</h3><p>A booster in your region accepts the order.</p></li>
-          <li><span class="n">3</span><h3>Follow it live</h3><p>Match history, chat with your booster and an optional stream.</p></li>
-          <li><span class="n">4</span><h3>Play at your new rank</h3><p>The order closes at your target. Change your password and queue.</p></li>
+          <li><span class="n">1</span><h3>Set your goal</h3><p>Pick your ranks, playlist and extras. The price updates as you go.</p></li>
+          <li><span class="n">2</span><h3>Get matched</h3><p>A booster from your region takes the order.</p></li>
+          <li><span class="n">3</span><h3>Watch it live</h3><p>Match history, chat with your booster, and a stream if you want one.</p></li>
+          <li><span class="n">4</span><h3>Play at your new rank</h3><p>We close the order at your target. Change your password and queue up.</p></li>
         </ol>
       </div>
     </div>
@@ -470,22 +467,21 @@ footer p a{color:var(--ink);text-underline-offset:2px}
       <div class="right block">
         <form class="panel" id="calc" novalidate>
           <h2 class="h2">Price your boost</h2>
-          <div class="goals" role="group" aria-label="Quick targets">
-            <span class="goals-label">Aim for</span>
-            <button type="button" data-goal="next">Next rank</button>
-            <button type="button" data-goal="12">Diamond</button>
-            <button type="button" data-goal="15">Champion</button>
-            <button type="button" data-goal="18">Grand Champion</button>
-            <button type="button" data-goal="21">SSL</button>
-          </div>
 
           <div class="field">
             <div class="field-top"><label for="rFrom">Current rank</label><span class="rank"><i class="gem" id="gFrom"></i><span id="nFrom">Platinum II</span></span></div>
-            <div class="slider-row"><button type="button" class="step" data-for="rFrom" data-d="-1" aria-label="Lower current rank">−</button><div class="slider"><div class="ticks" id="ticks1"></div><input id="rFrom" type="range" min="0" max="21" value="10"></div><button type="button" class="step" data-for="rFrom" data-d="1" aria-label="Raise current rank">+</button></div>
+            <div class="slider-row"><button type="button" class="step" data-for="rFrom" data-d="-1" aria-label="Lower current rank">−</button><div class="slider"><input id="rFrom" type="range" min="0" max="21" value="10"></div><button type="button" class="step" data-for="rFrom" data-d="1" aria-label="Raise current rank">+</button></div>
           </div>
           <div class="field">
             <div class="field-top"><label for="rTo">Target rank</label><span class="rank"><i class="gem" id="gTo"></i><span id="nTo">Diamond III</span></span></div>
-            <div class="slider-row"><button type="button" class="step" data-for="rTo" data-d="-1" aria-label="Lower target rank">−</button><div class="slider"><div class="ticks" id="ticks2"></div><input id="rTo" type="range" min="0" max="21" value="14"></div><button type="button" class="step" data-for="rTo" data-d="1" aria-label="Raise target rank">+</button></div>
+            <div class="slider-row"><button type="button" class="step" data-for="rTo" data-d="-1" aria-label="Lower target rank">−</button><div class="slider"><input id="rTo" type="range" min="0" max="21" value="14"></div><button type="button" class="step" data-for="rTo" data-d="1" aria-label="Raise target rank">+</button></div>
+            <div class="goals" role="group" aria-label="Quick targets">
+              <button type="button" data-goal="next">Next rank</button>
+              <button type="button" data-goal="12">Diamond</button>
+              <button type="button" data-goal="15">Champion</button>
+              <button type="button" data-goal="18">Grand Champion</button>
+              <button type="button" data-goal="21">SSL</button>
+            </div>
             <div class="ladder" id="ladder" aria-hidden="true"></div>
           </div>
 
@@ -500,9 +496,9 @@ footer p a{color:var(--ink);text-underline-offset:2px}
           </div>
 
           <div class="field opts">
-            <label class="opt"><span>Play with your booster<small>Duo queue on your own account, +50%</small></span><input type="checkbox" data-x="0.50"><i class="switch"></i></label>
-            <label class="opt"><span>Priority start<small>Picked up first, finished about a quarter sooner, +20%</small></span><input type="checkbox" data-x="0.20" id="prio"><i class="switch"></i></label>
-            <label class="opt"><span>Live stream<small>Watch every match as it's played, +10%</small></span><input type="checkbox" data-x="0.10"><i class="switch"></i></label>
+            <label class="opt"><span>Play with your booster<small>Duo on your own account. +50%</small></span><input type="checkbox" data-x="0.50"><i class="switch"></i></label>
+            <label class="opt"><span>Priority<small>Starts first, finishes about 25% sooner. +20%</small></span><input type="checkbox" data-x="0.20" id="prio"><i class="switch"></i></label>
+            <label class="opt"><span>Live stream<small>Watch every match as it happens. +10%</small></span><input type="checkbox" data-x="0.10"><i class="switch"></i></label>
           </div>
 
           <div class="total">
@@ -514,11 +510,7 @@ footer p a{color:var(--ink);text-underline-offset:2px}
             <button class="btn btn-blue btn-lg magnetic" type="submit">Order boost</button>
           </div>
           <p class="save" id="save" aria-live="polite"></p>
-          <ul class="assure">
-            <li>Pay only when a booster accepts</li>
-            <li>Refund for any division not delivered</li>
-            <li>Pause the order whenever you want</li>
-          </ul>
+          <p class="assure">Pay only when a booster accepts. Anything not delivered is refunded.</p>
         </form>
       </div>
     </div>
@@ -528,26 +520,26 @@ footer p a{color:var(--ink);text-underline-offset:2px}
   <section id="coaching" data-anchors="coaching" data-label="Coaching">
     <div class="wrap block">
       <h2 class="h2">Or get better yourself</h2>
-      <p class="lead" style="margin-top:18px">Coaching from the same players. Live sessions, replay reviews and a plan you can follow on your own.</p>
+      <p class="lead" style="margin-top:18px">The same players, coaching you live. Replay reviews and a plan you can keep using.</p>
       <div class="plans">
         <article class="plan">
           <div class="plan-top"><h3>Single session</h3></div>
           <div class="cost">€25 <small>one hour</small></div>
-          <ul><li>Live session over voice</li><li>One replay reviewed</li><li>Drill list for the week</li></ul>
+          <ul><li>One hour, live over voice</li><li>One replay reviewed</li><li>A drill list for the week</li></ul>
           <a class="btn btn-line" href="#cta">Book a session</a>
         </article>
         <article class="plan pick">
-          <div class="plan-top"><h3>Five sessions</h3><span class="tag">Most booked</span></div>
+          <div class="plan-top"><h3>Five sessions</h3><span class="tag">Best value</span></div>
           <div class="cost">€109 <small>€21.80 a session</small></div>
-          <p class="save-tag">€16 less than five single sessions</p>
-          <ul><li>Five live sessions</li><li>Unlimited replay reviews</li><li>Weekly training-pack plan</li><li>Chat with your coach between sessions</li></ul>
+          <p class="save-tag">Save €16 on five single sessions</p>
+          <ul><li>Five live sessions</li><li>Unlimited replay reviews</li><li>A weekly training plan</li><li>Chat with your coach in between</li></ul>
           <a class="btn btn-blue magnetic" href="#cta">Book five sessions</a>
         </article>
         <article class="plan">
           <div class="plan-top"><h3>Season</h3></div>
           <div class="cost">€139 <small>per month</small></div>
           <p class="save-tag muted-tag">About €35 a week</p>
-          <ul><li>A session every week</li><li>Ten duo games a month</li><li>Tournament preparation</li><li>First pick of time slots</li></ul>
+          <ul><li>A session every week</li><li>Ten duo games a month</li><li>Tournament prep</li><li>First pick of time slots</li></ul>
           <a class="btn btn-line" href="#cta">Start a season</a>
         </article>
       </div>
@@ -560,11 +552,11 @@ footer p a{color:var(--ink);text-underline-offset:2px}
       <div class="left block">
         <h2 class="h2">Questions</h2>
         <div class="faq">
-          <div class="q open"><button type="button" aria-expanded="true">Do boosters use bots or scripts?<i class="pm"></i></button><div class="a"><div><p>No. Every game is played by a person, on a normal setup. Orders that ask for macros or scripts are refused.</p></div></div></div>
-          <div class="q"><button type="button" aria-expanded="false">Can I keep my login to myself?<i class="pm"></i></button><div class="a"><div><p>Yes. Choose duo queue or coaching: you stay on your own account and play every match yourself.</p></div></div></div>
-          <div class="q"><button type="button" aria-expanded="false">Can I play while the order is running?<i class="pm"></i></button><div class="a"><div><p>Pause the order from your dashboard. Your booster continues when you resume it.</p></div></div></div>
+          <div class="q open"><button type="button" aria-expanded="true">Do boosters use bots or scripts?<i class="pm"></i></button><div class="a"><div><p>Never. Every game is played by a person. We refuse orders that ask for macros or scripts.</p></div></div></div>
+          <div class="q"><button type="button" aria-expanded="false">Can I keep my login to myself?<i class="pm"></i></button><div class="a"><div><p>Yes. Choose duo queue or coaching. You stay on your account and play every match.</p></div></div></div>
+          <div class="q"><button type="button" aria-expanded="false">Can I play while the order is running?<i class="pm"></i></button><div class="a"><div><p>Yes. Pause the order from your dashboard, and resume it when you're done.</p></div></div></div>
           <div class="q"><button type="button" aria-expanded="false">Which platforms do you cover?<i class="pm"></i></button><div class="a"><div><p>PC, PlayStation, Xbox and Switch, through your linked Epic Games account.</p></div></div></div>
-          <div class="q"><button type="button" aria-expanded="false">What if the target isn't reached?<i class="pm"></i></button><div class="a"><div><p>Every division that isn't delivered is refunded to your original payment method.</p></div></div></div>
+          <div class="q"><button type="button" aria-expanded="false">What if you don't reach my target?<i class="pm"></i></button><div class="a"><div><p>You get back the price of every division we don't deliver, to your original payment method.</p></div></div></div>
         </div>
       </div>
     </div>
@@ -703,7 +695,6 @@ footer p a{color:var(--ink);text-underline-offset:2px}
   RANKS.push({ label: 'Supersonic Legend', c1: '#FFFFFF', c2: '#8E9BC4', step: 35, tier: 7 });
 
   const rFrom = $('#rFrom'), rTo = $('#rTo');
-  [$('#ticks1'), $('#ticks2')].forEach(t => { for (let i = 0; i < RANKS.length; i++) { const k = document.createElement('i'); if (i % 3 === 0) k.className = 't'; t.appendChild(k); } });
   let mult = 1, shown = 0, anim;
   const ladder = $('#ladder'), ladderCells = RANKS.map((r, i) => {
     const c = document.createElement('i'); c.style.setProperty('--c1', r.c1); c.style.setProperty('--c2', r.c2);
@@ -746,10 +737,10 @@ footer p a{color:var(--ink);text-underline-offset:2px}
     // boosters play about 10 hours a day; priority finishes ~25% sooner
     const h = hours * ($('#prio').checked ? 0.75 : 1);
     const when = h <= 12 ? `${Math.max(2, Math.round(h))}–${Math.round(h * 1.5) + 2} hours` : `${Math.ceil(h / 10)}–${Math.ceil(h / 10) + 1} days`;
-    $('#eta').textContent = `${n} division${n > 1 ? 's' : ''}, ready in about ${when}`;
+    $('#eta').textContent = `${n} division${n > 1 ? 's' : ''}, about ${when}`;
     const final = full * (bundle ? 1 - BUNDLE.off : 1), money = v => '€' + (v < 100 ? v.toFixed(2) : Math.round(v));
-    $('#save').textContent = bundle ? `You save ${money(full - final)} with ${BUNDLE.off * 100}% off orders of ${BUNDLE.from}+ divisions.`
-      : n === BUNDLE.from - 1 ? `One more division and the whole order is ${BUNDLE.off * 100}% off.` : '';
+    $('#save').textContent = bundle ? `You save ${money(full - final)}. Orders of ${BUNDLE.from}+ divisions are ${BUNDLE.off * 100}% off.`
+      : n === BUNDLE.from - 1 ? `Add one more division and the whole order is ${BUNDLE.off * 100}% off.` : '';
     $('#save').classList.toggle('nudge', !bundle && n === BUNDLE.from - 1);
     // ladder: where you are, where you're going
     ladderCells.forEach((c, i) => { c.classList.toggle('in', i > a && i <= b); c.classList.toggle('from', i === a); c.classList.toggle('to', i === b); });
