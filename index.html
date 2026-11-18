@@ -12,6 +12,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet">
+<!-- import map first: browsers ignore one that appears after a module script; the shim adds it where missing -->
+<script async src="https://cdn.jsdelivr.net/npm/es-module-shims@1.10.0/dist/es-module-shims.js" crossorigin="anonymous"></script>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
 <style>
 /* ============================================================
    Tokens
@@ -44,7 +52,7 @@ body{
   background:var(--studio);
 }
 body::before{
-  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  content:"";position:fixed;top:0;right:0;bottom:0;left:0;z-index:-1;pointer-events:none;
   background:radial-gradient(90vw 70vh at 50% 38%, #FFFFFF 0%, rgba(255,255,255,0) 70%),
              linear-gradient(#F1F3F6, #E7EAEE);
 }
@@ -76,7 +84,7 @@ button{font:inherit;color:inherit}
 
 /* ---------- header ---------- */
 .bar{
-  position:fixed;inset:0 0 auto 0;z-index:30;height:68px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;
+  position:fixed;top:0;left:0;right:0;z-index:30;height:68px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;
   padding:0 clamp(16px,3vw,40px);transition:background-color .3s, box-shadow .3s;
 }
 .bar.solid{background:rgba(238,240,243,.78);-webkit-backdrop-filter:saturate(1.4) blur(16px);backdrop-filter:saturate(1.4) blur(16px);box-shadow:0 1px 0 var(--line-2)}
@@ -100,7 +108,7 @@ button{font:inherit;color:inherit}
 .bar-progress{position:absolute;left:0;right:0;bottom:-1px;height:2px;transform-origin:left;transform:scaleX(0);background:var(--orange)}
 
 /* ---------- 3D stage ---------- */
-#scene{position:fixed;inset:0;width:100%;height:100%;z-index:0;display:block;pointer-events:none}
+#scene{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;display:block;pointer-events:none}
 main{position:relative;z-index:1}
 #main:focus{outline:none}
 section{position:relative}
@@ -321,7 +329,7 @@ footer p a{color:var(--ink);text-underline-offset:2px}
 .toast.show{transform:translate(-50%,0)}
 
 /* ---------- loader ---------- */
-.loader{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:var(--studio);transition:opacity .6s ease .1s, visibility 0s .8s}
+.loader{position:fixed;top:0;right:0;bottom:0;left:0;z-index:50;display:grid;place-items:center;background:var(--studio);transition:opacity .6s ease .1s, visibility 0s .8s}
 .loader span{font-size:.9rem;color:var(--graphite);font-variant-numeric:tabular-nums}
 .loader i{display:block;width:120px;height:1px;background:var(--line);margin-top:12px;overflow:hidden}
 .loader i b{display:block;height:100%;background:var(--ink);transform-origin:left;transform:scaleX(var(--l,0));transition:transform .3s}
@@ -707,7 +715,8 @@ footer p a{color:var(--ink);text-underline-offset:2px}
   navLinks.forEach(a => a.addEventListener('click', () => setMenu(false)));
   addEventListener('keydown', e => { if (e.key === 'Escape' && bar.classList.contains('open')) { setMenu(false); menuBtn.focus(); } });
   addEventListener('click', e => { if (!bar.contains(e.target)) setMenu(false); });
-  matchMedia('(min-width:961px)').addEventListener('change', () => setMenu(false));
+  const wide = matchMedia('(min-width:961px)'), closeMenu = () => setMenu(false);
+  wide.addEventListener ? wide.addEventListener('change', closeMenu) : wide.addListener(closeMenu);
 
   // radio groups: arrow keys move the choice, Tab enters on the checked one (ARIA radio pattern)
   function roving(group) {
@@ -735,7 +744,7 @@ footer p a{color:var(--ink);text-underline-offset:2px}
 
   // checkout and booking aren't wired up yet: say so instead of jumping somewhere unrelated
   $$('[data-book]').forEach(b => b.addEventListener('click', () => toast(`${b.dataset.book}: la prenotazione non è ancora collegata. Questa pagina è un’anteprima.`)));
-  $('#orderQuote').addEventListener('click', () => $('#calc').requestSubmit());
+  $('#orderQuote').addEventListener('click', () => { const f = $('#calc'); f.requestSubmit ? f.requestSubmit() : f.dispatchEvent(new Event('submit', { cancelable: true })); });
 
   // paint swatches (the 3D scene listens for 'paint')
   const PAINTS = [['Squadra blu', '#1E63FF'], ['Squadra arancione', '#FF6A1A'], ['Titanio', '#C9CDD3'], ['Grafite', '#2B2F37'], ['Viola', '#6C4CF5']];
@@ -771,7 +780,7 @@ footer p a{color:var(--ink);text-underline-offset:2px}
 
   const rFrom = $('#rFrom'), rTo = $('#rTo');
   const eur2 = new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' });
-  const eur0 = new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+  const eur0 = new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0 });
   const money = v => (v < 100 ? eur2 : eur0).format(v);
   let mult = 1, shown = 0, anim;
   const ladder = $('#ladder'), ladderCells = RANKS.map((r, i) => {
@@ -891,12 +900,6 @@ document.addEventListener('click', e => {
 </script>
 
 <!-- ============ 3D scene ============ -->
-<script type="importmap">
-{ "imports": {
-  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
-} }
-</script>
 <script type="module">
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
@@ -931,7 +934,9 @@ setLoad(.35);
 
 const isTouch = matchMedia('(pointer:coarse)').matches;
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const renderer = new THREE.WebGLRenderer({ canvas: $('#scene'), antialias: true, alpha: true, powerPreference: 'high-performance' });
+let renderer;
+try { renderer = new THREE.WebGLRenderer({ canvas: $('#scene'), antialias: true, alpha: true, powerPreference: 'high-performance' }); }
+catch (e) { $('#scene').remove(); window.revealHero(); throw e; }   // the page works without the 3D car
 renderer.setPixelRatio(Math.min(devicePixelRatio, isTouch ? 1.75 : 2));
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.0;
