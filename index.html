@@ -310,11 +310,11 @@ footer p a{color:var(--ink);text-underline-offset:2px}
         <h2 class="h2">Pick how you climb</h2>
         <p class="lead" style="margin-top:18px">Hand your account to a booster, or keep it and play every game next to one.</p>
         <ul class="svc">
-          <li><h3>Rank boost</h3><p>A booster plays on your account until you reach your target.</p><span class="price">€4<small>per division</small></span></li>
-          <li><h3>Duo queue</h3><p>Queue with a Grand Champion on your own account. No login shared.</p><span class="price">€6<small>per division</small></span></li>
-          <li><h3>Win boost</h3><p>Wins for season rewards, challenges and the last push before reset.</p><span class="price">€1.50<small>per win</small></span></li>
-          <li><h3>Placement matches</h3><p>Start the season where you belong, not three divisions below.</p><span class="price">€29<small>per playlist</small></span></li>
-          <li><h3>Tournament carry</h3><p>A pro team-mate for scheduled tournaments, for titles and credits.</p><span class="price">€9<small>per tournament</small></span></li>
+          <li><h3>Rank boost</h3><p>A booster plays on your account until you reach your target.</p><span class="price">from €1.50<small>per division</small></span></li>
+          <li><h3>Duo queue</h3><p>Queue with a Grand Champion on your own account. No login shared.</p><span class="price">from €2.25<small>per division</small></span></li>
+          <li><h3>Win boost</h3><p>Wins for season rewards, challenges and the last push before reset.</p><span class="price">from €1.20<small>per win</small></span></li>
+          <li><h3>Placement matches</h3><p>Start the season where you belong, not three divisions below.</p><span class="price">from €19<small>all 10 matches</small></span></li>
+          <li><h3>Tournament carry</h3><p>A pro team-mate for scheduled tournaments, for titles and credits.</p><span class="price">from €12<small>per tournament win</small></span></li>
         </ul>
       </div>
     </div>
@@ -358,15 +358,15 @@ footer p a{color:var(--ink);text-underline-offset:2px}
             <span class="field-label" id="plLabel">Playlist</span>
             <div class="seg" role="radiogroup" aria-labelledby="plLabel" id="playlist">
               <i></i>
-              <button type="button" role="radio" aria-checked="false" data-m="1.35">1v1</button>
+              <button type="button" role="radio" aria-checked="false" data-m="1.10">1v1</button>
               <button type="button" role="radio" aria-checked="true" data-m="1">2v2</button>
-              <button type="button" role="radio" aria-checked="false" data-m="0.95">3v3</button>
+              <button type="button" role="radio" aria-checked="false" data-m="1.05">3v3</button>
             </div>
           </div>
 
           <div class="field opts">
-            <label class="opt"><span>Play with your booster<small>Duo queue on your own account, +40%</small></span><input type="checkbox" data-x="0.40"><i class="switch"></i></label>
-            <label class="opt"><span>Priority start<small>Picked up first and finished sooner, +20%</small></span><input type="checkbox" data-x="0.20" id="prio"><i class="switch"></i></label>
+            <label class="opt"><span>Play with your booster<small>Duo queue on your own account, +50%</small></span><input type="checkbox" data-x="0.50"><i class="switch"></i></label>
+            <label class="opt"><span>Priority start<small>Picked up first, finished about a quarter sooner, +20%</small></span><input type="checkbox" data-x="0.20" id="prio"><i class="switch"></i></label>
             <label class="opt"><span>Live stream<small>Watch every match as it's played, +10%</small></span><input type="checkbox" data-x="0.10"><i class="switch"></i></label>
           </div>
 
@@ -387,19 +387,19 @@ footer p a{color:var(--ink);text-underline-offset:2px}
       <div class="plans">
         <article class="plan">
           <div class="plan-top"><h3>Single session</h3></div>
-          <div class="cost">€19 <small>one hour</small></div>
+          <div class="cost">€25 <small>one hour</small></div>
           <ul><li>Live session over voice</li><li>One replay reviewed</li><li>Drill list for the week</li></ul>
           <a class="btn btn-line" href="#cta">Book a session</a>
         </article>
         <article class="plan pick">
           <div class="plan-top"><h3>Five sessions</h3><span class="tag">Most booked</span></div>
-          <div class="cost">€79 <small>€15.80 a session</small></div>
+          <div class="cost">€109 <small>€21.80 a session</small></div>
           <ul><li>Five live sessions</li><li>Unlimited replay reviews</li><li>Weekly training-pack plan</li><li>Chat with your coach between sessions</li></ul>
           <a class="btn btn-blue magnetic" href="#cta">Book five sessions</a>
         </article>
         <article class="plan">
           <div class="plan-top"><h3>Season</h3></div>
-          <div class="cost">€149 <small>per month</small></div>
+          <div class="cost">€139 <small>per month</small></div>
           <ul><li>A session every week</li><li>Ten duo games a month</li><li>Tournament preparation</li><li>First pick of time slots</li></ul>
           <a class="btn btn-line" href="#cta">Start a season</a>
         </article>
@@ -519,15 +519,19 @@ footer p a{color:var(--ink);text-underline-offset:2px}
     $('#swatches').appendChild(b);
   });
 
-  // ---------- calculator (placeholder pricing — edit freely) ----------
+  // ---------- calculator ----------
+  // € per division climbed INTO each tier (2v2 base). Set against public prices
+  // from buyboosting, PlayHub, PlayerAuctions and Kinguin, Nov 2026: mid-market,
+  // a little above the cheapest marketplaces for vetted GC/SSL boosters.
   const TIERS = [
-    ['Bronze', '#D9A178', '#9A5B33', 4], ['Silver', '#E9EDF3', '#9AA5B8', 5], ['Gold', '#FFD978', '#D7961A', 6],
-    ['Platinum', '#A8EEFF', '#3BA5CC', 8], ['Diamond', '#9DBBFF', '#3463E6', 12], ['Champion', '#D9B3FF', '#8048DE', 19],
-    ['Grand Champion', '#FF9EB1', '#D42953', 34],
+    ['Bronze', '#D9A178', '#9A5B33', 1.5], ['Silver', '#E9EDF3', '#9AA5B8', 2], ['Gold', '#FFD978', '#D7961A', 3],
+    ['Platinum', '#A8EEFF', '#3BA5CC', 4.5], ['Diamond', '#9DBBFF', '#3463E6', 6], ['Champion', '#D9B3FF', '#8048DE', 11],
+    ['Grand Champion', '#FF9EB1', '#D42953', 28],
   ];
+  const BUNDLE = { from: 6, off: 0.10 };   // 10% off orders of 6+ divisions
   const RANKS = [];
   TIERS.forEach(([n, c1, c2, step], t) => ['I', 'II', 'III'].forEach(d => RANKS.push({ label: `${n} ${d}`, c1, c2, step, tier: t })));
-  RANKS.push({ label: 'Supersonic Legend', c1: '#FFFFFF', c2: '#8E9BC4', step: 90, tier: 7 });
+  RANKS.push({ label: 'Supersonic Legend', c1: '#FFFFFF', c2: '#8E9BC4', step: 85, tier: 7 });
 
   const rFrom = $('#rFrom'), rTo = $('#rTo');
   [$('#ticks1'), $('#ticks2')].forEach(t => { for (let i = 0; i < RANKS.length; i++) { const k = document.createElement('i'); if (i % 3 === 0) k.className = 't'; t.appendChild(k); } });
@@ -560,9 +564,12 @@ footer p a{color:var(--ink);text-underline-offset:2px}
     let base = 0, hours = 0;
     for (let i = a; i < b; i++) { base += RANKS[i + 1].step; hours += 1.2 + RANKS[i + 1].tier * .8; }
     let extra = 0; $$('#calc input[type=checkbox]:checked').forEach(c => extra += +c.dataset.x);
-    tweenTo(base * mult * (1 + extra));
-    const d = Math.max(1, Math.round(hours / ($('#prio').checked ? 9 : 6))), n = b - a;
-    $('#eta').textContent = `${n} division${n > 1 ? 's' : ''}, done in about ${d}–${d + 1} days`;
+    const n = b - a, bundle = n >= BUNDLE.from;
+    tweenTo(base * mult * (1 + extra) * (bundle ? 1 - BUNDLE.off : 1));
+    // boosters play about 10 hours a day; priority finishes ~25% sooner
+    const h = hours * ($('#prio').checked ? 0.75 : 1);
+    const when = h <= 12 ? `${Math.max(2, Math.round(h))}–${Math.round(h * 1.5) + 2} hours` : `${Math.ceil(h / 10)}–${Math.ceil(h / 10) + 1} days`;
+    $('#eta').textContent = `${n} division${n > 1 ? 's' : ''}, done in about ${when}` + (bundle ? `. ${BUNDLE.off * 100}% bundle discount included` : '');
     if (src) dispatchEvent(new CustomEvent('calc'));
   }
   rFrom.addEventListener('input', () => calc(rFrom));
@@ -615,8 +622,8 @@ import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 
 /* ------------------------------------------------------------------
    Car model — Octane by Jako (Sketchfab), CC BY 4.0, served next to
-   this page as octane.glb (meshopt + WebP, 430 KB).
-   url:    the .glb (or a .js module exporting it as base64); null shows the placeholder car
+   this page as octane-model.js (meshopt + WebP .glb in base64, 580 KB).
+   url:    module exporting the .glb as base64; null shows the placeholder car
    rotY:   turns the model so its nose faces +Z
    wheels: top-level wheel nodes, spun around the axle
    paint:  materials that take the paint swatches
