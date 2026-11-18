@@ -108,6 +108,8 @@ button{font:inherit;color:inherit}
 .bar-progress{position:absolute;left:0;right:0;bottom:-1px;height:2px;transform-origin:left;transform:scaleX(0);background:var(--orange)}
 
 /* ---------- 3D stage ---------- */
+.car-still{display:block;position:relative;z-index:1;width:auto;height:auto;max-width:min(60vw,700px);max-height:36vh;margin:0 auto}
+.no3d .config,.no3d .drag-zone{display:none}
 #scene{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;display:block;pointer-events:none}
 main{position:relative;z-index:1}
 #main:focus{outline:none}
@@ -347,6 +349,7 @@ footer p a{color:var(--ink);text-underline-offset:2px}
   .bar.open .nav{opacity:1;visibility:visible;transform:none;transition:opacity .2s, transform .3s var(--ease)}
   .nav a{padding:14px 16px;font-size:1rem;color:var(--ink);border-radius:12px}
   .hero-bottom{flex-direction:column;align-items:stretch;gap:22px}
+  .car-still{max-width:88vw;max-height:30vh}
   /* like the other blocks: the car slides under the copy while scrolling (at rest it sits above it) */
   .hero-bottom{background:var(--studio);box-shadow:0 -14px 14px -4px var(--studio)}
   .config{align-items:flex-start}
@@ -667,7 +670,14 @@ footer p a{color:var(--ink);text-underline-offset:2px}
   });
   let revealed = false;
   window.revealHero = () => { if (revealed) return; revealed = true; document.documentElement.classList.add('loaded'); $('#h1').classList.add('on'); };
-  setTimeout(window.revealHero, 5000); // safety net if 3D never loads
+  // no live 3D (WebGL off, as in LibreWolf by default, or the library failed to load): a still of the car
+  window.showStill = () => {
+    if ($('.car-still')) return;
+    document.documentElement.classList.add('no3d');
+    const img = new Image(954, 631); img.src = 'car.webp'; img.alt = ''; img.className = 'car-still';
+    $('#hero').insertBefore(img, $('.hero-bottom'));
+  };
+  setTimeout(() => { if (!window.carLive) window.showStill(); window.revealHero(); }, 5000); // safety net if 3D never loads
   new IntersectionObserver(es => es.forEach(e => e.isIntersecting && e.target.classList.add('on')), { threshold: .4 }).observe($('#ctaTitle'));
 
   // header: solid on scroll, current section, progress; process steps
@@ -936,7 +946,8 @@ const isTouch = matchMedia('(pointer:coarse)').matches;
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 let renderer;
 try { renderer = new THREE.WebGLRenderer({ canvas: $('#scene'), antialias: true, alpha: true, powerPreference: 'high-performance' }); }
-catch (e) { $('#scene').remove(); window.revealHero(); throw e; }   // the page works without the 3D car
+catch (e) { $('#scene').remove(); window.showStill(); window.revealHero(); throw e; }   // the page works without the 3D car
+window.carLive = true;
 renderer.setPixelRatio(Math.min(devicePixelRatio, isTouch ? 1.75 : 2));
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.0;
