@@ -86,7 +86,7 @@ button{font:inherit;color:inherit}
 /* ---------- header ---------- */
 .bar{
   position:fixed;top:0;left:0;right:0;z-index:30;height:68px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;
-  padding:0 clamp(16px,3vw,40px);transition:background-color .3s, box-shadow .3s;
+  padding:0 max(clamp(16px,3vw,40px), calc((100vw - 1360px) / 2 + 40px));transition:background-color .3s, box-shadow .3s;
 }
 .bar.solid{background:rgba(238,240,243,.78);-webkit-backdrop-filter:saturate(1.4) blur(16px);backdrop-filter:saturate(1.4) blur(16px);box-shadow:0 1px 0 var(--line-2)}
 /* wordmark: the i's dot is the ball, hit up and forward */
@@ -457,7 +457,7 @@ footer p a{color:var(--ink);text-underline-offset:2px}
       </div>
       <div class="config fade-in">
         <div class="swatches" role="radiogroup" aria-label="Colore dell’auto" id="swatches"></div>
-        <p class="config-label"><b id="paintName">Squadra blu</b><span>Trascina per ruotare</span></p>
+        <p class="config-label"><b id="paintName">Squadra blu</b><span>Trascina per ruotare, tocca per saltare</span></p>
       </div>
     </div>
   </section>
@@ -1071,7 +1071,11 @@ ao.rotation.x = -Math.PI / 2; ao.position.y = 0.004;
 const floor = new THREE.Mesh(new THREE.PlaneGeometry(14, 14), new THREE.ShadowMaterial({ opacity: 0.16 }));
 floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true;
 
-const pivot = new THREE.Group(); pivot.add(car, ao);
+// air: the car's centre of mass (suspension, jumps and flips turn around it); carSpace: car space, wheels on y = 0
+const COG = 0.7;
+const air = new THREE.Group(); air.position.y = COG;
+const carSpace = new THREE.Group(); carSpace.position.y = -COG; air.add(carSpace); carSpace.add(car);
+const pivot = new THREE.Group(); pivot.add(air, ao);
 const rig = new THREE.Group(); rig.add(pivot, floor);
 const key = new THREE.DirectionalLight(0xffffff, 2.0);
 key.position.set(2.5, 9, 3.5);
@@ -1159,7 +1163,7 @@ ventMat.color = bBody;                                   // shares the live boos
 const thrusters = [];                                    // { flame, vent, pos }
 let VENT = { w: 0.26, h: 0.26 };
 function setNozzles(list, vent) {
-  thrusters.forEach(t => { pivot.remove(t.flame); pivot.remove(t.vent); });
+  thrusters.forEach(t => { carSpace.remove(t.flame); carSpace.remove(t.vent); });
   thrusters.length = 0;
   VENT = vent || VENT;
   list.forEach(p => {
@@ -1171,7 +1175,7 @@ function setNozzles(list, vent) {
     const vt = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), ventMat);
     vt.rotation.y = Math.PI; vt.scale.set(VENT.w * 0.9, VENT.h * 0.92, 1);
     vt.position.copy(pos).add(new THREE.Vector3(0, 0, 0.012)); vt.renderOrder = 2;
-    pivot.add(flame, vt);
+    carSpace.add(flame, vt);
     thrusters.push({ flame, vent: vt, pos });
   });
 }
@@ -1219,7 +1223,7 @@ const fMat = new THREE.ShaderMaterial({
 });
 // the trail lives in the car's own space, so it always streams straight out of the exhaust
 // however the layout moves or turns the car — no stray puffs left around the page
-const puffs = new THREE.Points(fGeo, fMat); puffs.frustumCulled = false; puffs.renderOrder = 2; pivot.add(puffs);
+const puffs = new THREE.Points(fGeo, fMat); puffs.frustumCulled = false; puffs.renderOrder = 2; carSpace.add(puffs);
 const fVel = Array.from({ length: N }, () => new THREE.Vector3());
 const fMax = new Float32Array(N), fBase = new Float32Array(N), fSpin = new Float32Array(N);
 let fAcc = 0, fI = 0;
@@ -1310,7 +1314,7 @@ function useModel(root) {
     return holder;
   });
   setNozzles(MODEL.nozzles, MODEL.vent);
-  car.visible = false; pivot.add(wrap); body = wrap;
+  car.visible = false; carSpace.add(wrap); body = wrap;
   measure();
 }
 function startDrive() { modelReady = true; age = 0; cur = reduced ? stateOf('hero') : { ...stateOf('hero'), x: -1.5, ry: Math.PI / 2 - 0.2, boost: 1 }; }
@@ -1360,6 +1364,9 @@ const MOB = {
 };
 const secs = [...document.querySelectorAll('main > section')];
 let anchors = [], mobile = false, halfW = 4, halfH = 2.5;
+// stage: above 1920 x 1200 the copy stops growing (max-width 1360px), so the car stops growing too
+// and keeps its distance from the centre in pixels; it no longer outgrows the layout on 2K/4K/ultrawide
+let stage = 1;
 const FIT = {};   // per-pose { y, s } overrides that keep the car off the text (see fit())
 const stateOf = id => Object.assign(mobile ? { ...DESK[id], ...MOB[id] } : { ...DESK[id] }, FIT[id]);
 
@@ -1382,7 +1389,7 @@ const CLEAR = {
 };
 const _box = new THREE.Box3(), _p = new THREE.Vector3();
 function spanAt(st) {   // the car's vertical extent on screen (NDC) for a pose at y = 0
-  rig.position.set(st.x * halfW, LOOK.y - 0.78 * st.s, 0); rig.scale.setScalar(st.s);
+  rig.position.set(st.x * halfW * stage, LOOK.y - 0.78 * st.s * stage, 0); rig.scale.setScalar(st.s * stage);
   pivot.position.set(0, 0, 0); pivot.rotation.set(st.rx, st.ry, st.rz);
   rig.updateMatrixWorld(true);
   _box.setFromObject(body);
@@ -1434,15 +1441,22 @@ function target() {
   return o;
 }
 function resize() {
-  const w = innerWidth, h = innerHeight;
+  const w = innerWidth, h = innerHeight, deg = THREE.MathUtils.degToRad;
   mobile = w < 960;
+  stage = Math.min(1, 1920 / w, 1200 / h);
+  // keep the drawing buffer within what every GPU accepts (4096 px a side), or browsers squash it
+  renderer.setPixelRatio(Math.min(devicePixelRatio, isTouch ? 1.75 : 2, 4096 / w, 4096 / h));
   renderer.setSize(w, h, false);
   camera.aspect = w / h;
-  const tanH = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
-  const dist = Math.max(10, (mobile ? 2.5 : 3.4) / (tanH * camera.aspect));
-  camera.position.set(0, 1.0 + dist * 0.085, dist);
+  // same framing as before (world half-height), but the horizontal field of view is capped at 48 deg:
+  // wide screens get a longer lens instead of wide-angle stretching at the edges
+  const tanH = Math.min(Math.tan(deg(15)), Math.tan(deg(24)) / camera.aspect);
+  camera.fov = 2 * THREE.MathUtils.radToDeg(Math.atan(tanH));
+  halfH = Math.max(10 * Math.tan(deg(15)), (mobile ? 2.5 : 3.4) / camera.aspect);
+  const dist = halfH / tanH, d0 = halfH / Math.tan(deg(15));
+  camera.position.set(0, LOOK.y + dist * (0.085 + 0.4 / d0), dist);   // same viewing angle at any distance
   camera.lookAt(LOOK); camera.updateProjectionMatrix();
-  halfH = dist * tanH; halfW = halfH * camera.aspect;
+  halfW = halfH * camera.aspect;
   fMat.uniforms.uScale.value = (h * renderer.getPixelRatio() / 2) / tanH;
   measure();
 }
@@ -1458,20 +1472,33 @@ addEventListener('pointermove', e => { if (e.pointerType === 'mouse') { ptr.tx =
 
 const drag = { on: false, x: 0, v: 0, off: 0 };
 const zone = $('#drag');
-zone.addEventListener('pointerdown', e => { drag.on = true; drag.x = e.clientX; drag.v = 0; zone.classList.add('dragging'); zone.setPointerCapture(e.pointerId); });
+zone.addEventListener('pointerdown', e => { drag.on = true; drag.x = drag.x0 = e.clientX; drag.t0 = performance.now(); drag.v = 0; zone.classList.add('dragging'); zone.setPointerCapture(e.pointerId); });
 zone.addEventListener('pointermove', e => { if (!drag.on) return; const dx = e.clientX - drag.x; drag.x = e.clientX; drag.v = dx * 0.009; drag.off += drag.v; });
 const endDrag = () => { drag.on = false; zone.classList.remove('dragging'); };
-zone.addEventListener('pointerup', endDrag); zone.addEventListener('pointercancel', endDrag);
+zone.addEventListener('pointerup', e => {   // a tap (no drag) is a jump
+  if (Math.abs(e.clientX - drag.x0) < 6 && performance.now() - drag.t0 < 350) jump(true);
+  endDrag();
+});
+zone.addEventListener('pointercancel', endDrag);
 
 let kick = 0;   // a short "rev": paint change, price change
-addEventListener('paint', e => { paintTarget.set(e.detail); setBoostColors(e.detail); kick = 1; });
+// suspension: damped springs for pitch, roll and heave (k 90, c 9: settles with one or two bounces)
+const pitch = { x: 0, v: 0 }, roll = { x: 0, v: 0 }, heave = { x: 0, v: 0 };
+const springStep = (sp, f, dt) => { sp.v += (-90 * sp.x - 9 * sp.v + f) * dt; sp.x += sp.v * dt; };
+const JUMP = { t: -1, flip: false, dur: 0.9, h: 0.8 };
+let calm = 0, flipNext = false;   // seconds without scrolling or touching, for the idle hops in the hero
+function jump(flip) {
+  if (reduced || JUMP.t >= 0 || !modelReady) return;
+  JUMP.t = 0; JUMP.flip = flip; heave.v -= 1.4; kick = 1; calm = 0;   // squat, then off it goes on boost
+}
+addEventListener('paint', e => { paintTarget.set(e.detail); setBoostColors(e.detail); kick = 1; heave.v -= 0.9; roll.v += 1.6; });
 let age = 0;
-addEventListener('calc', () => { kick = Math.max(kick, 0.6); });
+addEventListener('calc', () => { kick = Math.max(kick, 0.6); heave.v -= 0.5; pitch.v -= 1.2; });
 
 /* ---------------- loop ---------------- */
 let cur = { ...stateOf('hero'), x: -1.5, ry: Math.PI / 2 - 0.2, boost: 1 };   // drives in on load
 if (reduced) cur = stateOf('hero');
-let lastY = scrollY, vel = 0, spin = 0, prev = performance.now(), started = false;
+let lastY = scrollY, vel = 0, spin = 0, prev = performance.now(), started = false, lastRy = cur.ry, lastVel = 0;
 
 function frame(now) {
   const dt = Math.min(0.05, (now - prev) / 1000); prev = now; age += dt;
@@ -1490,9 +1517,29 @@ function frame(now) {
 
   kick = Math.max(0, kick - dt * 1.4);
   const idle = reduced ? 0 : 1, s = cur.s;
-  rig.position.set(cur.x * halfW, LOOK.y + cur.y * halfH - 0.78 * s + Math.sin(t * 1.3) * 0.025 * idle, 0);
-  rig.scale.setScalar(s);
-  pivot.position.y = Math.sin(kick * Math.PI) * 0.05;          // small hop on a "rev"
+  rig.position.set(cur.x * halfW * stage, LOOK.y + cur.y * halfH - 0.78 * s * stage + Math.sin(t * 1.3) * 0.025 * idle, 0);
+  rig.scale.setScalar(s * stage);
+  // ---- alive: the body leans out of turns, squats and lifts with scroll, hops when idle ----
+  const yawRate = dt > 0 ? (cur.ry - lastRy) / dt : 0; lastRy = cur.ry;
+  const acc = dt > 0 ? (vel - lastVel) / dt : 0; lastVel = vel;
+  const clamp = (v, m) => Math.max(-m, Math.min(m, v));
+  springStep(roll, clamp(-yawRate * 9, 14) * idle, dt);
+  springStep(pitch, clamp(-acc * 0.00045, 10) * idle, dt);
+  springStep(heave, 0, dt);
+  calm = speed > 0.02 || drag.on ? 0 : calm + dt;
+  if (calm > 9 && scrollY < innerHeight * 0.3 && document.visibilityState === 'visible') { jump(flipNext); flipNext = !flipNext; }
+  let lift = 0, flip = 0;
+  if (JUMP.t >= 0) {
+    JUMP.t += dt; const u = Math.min(1, JUMP.t / JUMP.dur);
+    lift = 4 * JUMP.h * u * (1 - u);
+    if (JUMP.flip) flip = TAU * (u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2);   // front flip, eased
+    if (u >= 1) { JUMP.t = -1; heave.v -= 2.2; pitch.v += 2.5; }   // land: the suspension takes it
+  }
+  air.position.y = COG + heave.x * 0.18 + lift;
+  air.rotation.set(pitch.x * 0.06 + flip, 0, roll.x * 0.05);
+  carSpace.position.y = -COG + Math.sin(t * 88) * 0.0035 * Math.min(1, cur.boost + kick) * idle;   // engine rumble on boost
+  const air01 = Math.min(1, lift / JUMP.h);
+  ao.scale.setScalar(1 - 0.45 * air01); ao.material.opacity = 1 - 0.75 * air01;   // contact shadow shrinks in the air
   pivot.rotation.set(
     cur.rx + ptr.y * 0.08 - (cur.boost + kick) * 0.025 + Math.sin(t * 0.8) * 0.008 * idle,
     cur.ry + drag.off + ptr.x * 0.3 + Math.sin(t * 0.3) * 0.06 * idle,
@@ -1506,7 +1553,7 @@ function frame(now) {
   const pk = 1 - Math.exp(-dt * 5);
   paint.color.lerp(paintTarget, pk);
   customPaint.forEach(m => m.color && m.color.lerp(paintTarget, pk));
-  flameStep(dt, reduced ? 0 : boost, s, t);
+  flameStep(dt, reduced ? 0 : boost, s * stage, t);
 
   renderer.render(scene, camera);
   if (!started && modelReady) { started = true; setLoad(1); window.revealHero(); }
