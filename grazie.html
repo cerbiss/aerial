@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Ordine ricevuto — Aerial</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet">
+<style>
+:root{--studio:#EEF0F3;--paper:#fff;--ink:#14171D;--graphite:#5D6470;--line-2:#E6E9EE;--blue:#1E63FF;--orange:#FF6A1A}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px 16px;background:var(--studio);color:var(--ink);font-family:"Archivo",system-ui,sans-serif;line-height:1.55}
+.card{width:min(520px,100%);background:var(--paper);border-radius:22px;padding:32px;box-shadow:0 24px 48px -24px rgba(20,23,29,.2),0 0 0 1px var(--line-2)}
+.ok{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:#E6F6EE;color:#0E8A4F;font-size:1.5rem;margin-bottom:18px}
+h1{margin:0 0 10px;font-size:1.9rem;line-height:1.1;letter-spacing:-.03em;font-variation-settings:"wdth" 120}
+p{margin:0 0 12px;color:var(--graphite)}
+ol{margin:14px 0 22px;padding-left:20px;color:var(--ink)}
+li{margin-bottom:6px}
+a.btn{display:inline-flex;align-items:center;height:48px;padding:0 22px;border-radius:999px;background:var(--blue);color:#fff;font-weight:600;text-decoration:none}
+a.btn:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+</style>
+</head>
+<body>
+<main class="card">
+  <div class="ok" aria-hidden="true">✓</div>
+  <h1>Ordine ricevuto</h1>
+  <p>L’importo è solo bloccato: non ti addebitiamo nulla finché un booster o un coach non accetta l’ordine.</p>
+  <ol>
+    <li>Ti scriviamo all’email che hai indicato per organizzare l’ordine.</li>
+    <li>Quando qualcuno accetta, l’importo viene addebitato.</li>
+    <li>Se nessuno accetta, il blocco si annulla e non paghi niente.</li>
+  </ol>
+  <p>Non ti chiederemo mai la password per email o in chat senza prima esserci sentiti.</p>
+  <a class="btn" href="/">Torna ad Aerial</a>
+</main>
+</body>
+</html>

@@ -327,6 +327,41 @@ footer p a{color:var(--ink);text-underline-offset:2px}
 .linkish:hover{color:var(--ink)}
 #glb{display:none}
 
+/* ---------- checkout ---------- */
+.checkout{width:min(520px,calc(100% - 24px));max-height:calc(100% - 24px);border:0;padding:0;border-radius:var(--r-panel);background:var(--paper);color:var(--ink);
+  box-shadow:0 30px 80px -20px rgba(20,23,29,.45), 0 0 0 1px var(--line-2);overscroll-behavior:contain}
+.checkout::backdrop{background:rgba(20,23,29,.42);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.checkout form{display:flex;flex-direction:column;gap:16px;padding:26px}
+.co-head{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.co-head h2{font-size:1.5rem;font-variation-settings:"wdth" 120}
+.co-x{width:40px;height:40px;border:0;border-radius:50%;background:var(--studio);cursor:pointer;font-size:1.4rem;line-height:1}
+.co-x:hover{background:#E3E7ED}
+.co-sum{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:14px 16px;border-radius:14px;background:var(--studio)}
+.co-item{font-weight:600;font-size:.95rem}
+.co-price{font-size:1.5rem;font-weight:640;letter-spacing:-.02em;white-space:nowrap;font-variation-settings:"wdth" 120;font-variant-numeric:tabular-nums}
+.co-f{display:flex;flex-direction:column;gap:6px;font-size:.9rem;color:var(--graphite)}
+.co-f input{height:48px;padding:0 14px;border-radius:var(--r-ctl);border:1px solid var(--line);background:#fff;font:inherit;font-size:1rem;color:var(--ink)}
+.co-f input:focus-visible{outline:2px solid var(--blue);outline-offset:1px;border-color:transparent}
+.co-f small{font-size:.8rem}
+.co-pay{border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.co-pay legend{font-size:.9rem;color:var(--graphite);margin-bottom:6px;padding:0}
+.co-m{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:var(--r-ctl);box-shadow:inset 0 0 0 1px var(--line);cursor:pointer;transition:box-shadow .2s, background-color .2s}
+.co-m:has(input:checked){box-shadow:inset 0 0 0 2px var(--blue);background:#F5F8FF}
+.co-m input{margin:3px 0 0;accent-color:var(--blue);width:18px;height:18px;flex:none}
+.co-m b{display:block;font-weight:600}
+.co-m small{display:block;color:var(--graphite);font-size:.82rem}
+.co-c{display:flex;gap:10px;align-items:flex-start;font-size:.88rem;cursor:pointer}
+.co-c input{margin:2px 0 0;accent-color:var(--blue);width:18px;height:18px;flex:none}
+.co-err{color:#C42B2B;font-size:.88rem;font-weight:600}
+.co-err:empty{display:none}
+.co-go{width:100%}
+.co-go:disabled{opacity:.6;cursor:progress}
+.co-fine{font-size:.8rem;color:var(--graphite)}
+@media (max-width:520px){
+  .checkout{width:100%;max-width:100%;margin:auto 0 0;border-radius:22px 22px 0 0;max-height:94vh}
+  .checkout form{padding:22px 18px calc(18px + env(safe-area-inset-bottom))}
+}
+
 /* ---------- toast ---------- */
 .toast{position:fixed;left:50%;bottom:24px;z-index:40;transform:translate(-50%,calc(100% + 40px));transition:transform .55s var(--ease);
   background:var(--ink);color:#fff;padding:12px 18px;border-radius:12px;font-size:.92rem;max-width:calc(100% - 32px);box-shadow:0 12px 30px rgba(20,23,29,.25)}
@@ -550,16 +585,16 @@ footer p a{color:var(--ink);text-underline-offset:2px}
             <span class="field-label" id="plLabel">Playlist</span>
             <div class="seg" role="radiogroup" aria-labelledby="plLabel" id="playlist">
               <i></i>
-              <button type="button" role="radio" aria-checked="false" data-m="1.10">1v1</button>
-              <button type="button" role="radio" aria-checked="true" data-m="1">2v2</button>
-              <button type="button" role="radio" aria-checked="false" data-m="1.05">3v3</button>
+              <button type="button" role="radio" aria-checked="false">1v1</button>
+              <button type="button" role="radio" aria-checked="true">2v2</button>
+              <button type="button" role="radio" aria-checked="false">3v3</button>
             </div>
           </div>
 
           <div class="field opts">
-            <label class="opt"><span>Gioca con il booster<small>Duo sul tuo account. +35%</small></span><input type="checkbox" data-x="0.35"><i class="switch"></i></label>
-            <label class="opt"><span>Priorità<small>Parte per primo, finisce circa il 25% prima. +20%</small></span><input type="checkbox" data-x="0.20" id="prio"><i class="switch"></i></label>
-            <label class="opt"><span>Diretta<small>Guarda ogni partita in tempo reale. +10%</small></span><input type="checkbox" data-x="0.10"><i class="switch"></i></label>
+            <label class="opt"><span>Gioca con il booster<small>Duo sul tuo account. +35%</small></span><input type="checkbox" data-key="duo"><i class="switch"></i></label>
+            <label class="opt"><span>Priorità<small>Parte per primo, finisce circa il 25% prima. +20%</small></span><input type="checkbox" data-key="prio" id="prio"><i class="switch"></i></label>
+            <label class="opt"><span>Diretta<small>Guarda ogni partita in tempo reale. +10%</small></span><input type="checkbox" data-key="stream"><i class="switch"></i></label>
           </div>
 
           <div class="total">
@@ -587,21 +622,21 @@ footer p a{color:var(--ink);text-underline-offset:2px}
           <div class="plan-top"><h3>Sessione singola</h3></div>
           <div class="cost">19 € <small>un’ora</small></div>
           <ul><li>Un’ora dal vivo, in chiamata vocale</li><li>Un replay analizzato</li><li>Esercizi per la settimana</li></ul>
-          <button type="button" class="btn btn-line" data-book="Sessione singola">Prenota una sessione</button>
+          <button type="button" class="btn btn-line" data-plan="single">Prenota una sessione</button>
         </article>
         <article class="plan pick">
           <div class="plan-top"><h3>Cinque sessioni</h3></div>
           <div class="cost">85 € <small>17 € a sessione</small></div>
           <p class="save-tag">Risparmi 10 € rispetto a cinque sessioni singole</p>
           <ul><li>Cinque sessioni dal vivo</li><li>Analisi dei replay illimitate</li><li>Un piano di allenamento settimanale</li><li>Chat con il coach tra una sessione e l’altra</li></ul>
-          <button type="button" class="btn btn-blue" data-book="Cinque sessioni">Prenota cinque sessioni</button>
+          <button type="button" class="btn btn-blue" data-plan="five">Prenota cinque sessioni</button>
         </article>
         <article class="plan">
           <div class="plan-top"><h3>Stagione</h3></div>
           <div class="cost">99 € <small>al mese</small></div>
           <p class="save-tag muted-tag">Circa 23 € a settimana</p>
           <ul><li>Una sessione ogni settimana</li><li>Dieci partite in duo al mese</li><li>Preparazione ai tornei</li><li>Prima scelta sugli orari</li></ul>
-          <button type="button" class="btn btn-line" data-book="Stagione">Inizia una stagione</button>
+          <button type="button" class="btn btn-line" data-plan="season">Inizia una stagione</button>
         </article>
       </div>
     </div>
@@ -652,8 +687,31 @@ footer p a{color:var(--ink);text-underline-offset:2px}
   <a class="btn btn-blue" href="#price">Vedi il preventivo</a>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+<dialog class="checkout" id="checkout" aria-labelledby="coTitle">
+  <form id="coForm" novalidate>
+    <div class="co-head"><h2 id="coTitle">Conferma l’ordine</h2><button type="button" class="co-x" id="coClose" aria-label="Chiudi">×</button></div>
+    <div class="co-sum"><p class="co-item" id="coItem"></p><p class="co-price" id="coPrice"></p></div>
+    <label class="co-f">Email
+      <input type="email" name="email" id="coEmail" autocomplete="email" spellcheck="false" required placeholder="nome@esempio.it">
+    </label>
+    <label class="co-f">Nome Epic Games
+      <input type="text" name="epic" id="coEpic" autocomplete="nickname" spellcheck="false" required minlength="3" maxlength="32" placeholder="Il nome che vedi in gioco…">
+      <small>Solo il nome visibile. Qui non ti chiediamo mai la password.</small>
+    </label>
+    <fieldset class="co-pay">
+      <legend>Come paghi</legend>
+      <label class="co-m"><input type="radio" name="method" value="stripe" checked><span><b>Carta, Apple Pay o Google Pay</b><small>Anche prepagate per ragazzi, come PostePay o Revolut &lt;18.</small></span></label>
+      <label class="co-m"><input type="radio" name="method" value="paypal"><span><b>PayPal</b><small>Pagamento protetto per beni e servizi.</small></span></label>
+    </fieldset>
+    <label class="co-c"><input type="checkbox" name="consent" id="coConsent" required><span>Ho almeno 18 anni, oppure un genitore o tutore ha approvato questo acquisto.</span></label>
+    <p class="co-err" id="coErr" role="alert"></p>
+    <button class="btn btn-blue btn-lg co-go" type="submit" id="coGo">Continua al pagamento</button>
+    <p class="co-fine">Paghi sulla pagina sicura di Stripe o PayPal. Ora l’importo viene solo bloccato: lo addebitiamo quando un booster o un coach accetta l’ordine. Se nessuno accetta, il blocco si annulla.</p>
+  </form>
+</dialog>
 
 <!-- ============ interface ============ -->
+<script src="pricing.js"></script>
 <script>
 (() => {
   const $ = (s, r = document) => r.querySelector(s);
@@ -752,9 +810,6 @@ footer p a{color:var(--ink);text-underline-offset:2px}
   }));
   faqSync();
 
-  // checkout and booking aren't wired up yet: say so instead of jumping somewhere unrelated
-  $$('[data-book]').forEach(b => b.addEventListener('click', () => toast(`${b.dataset.book}: la prenotazione non è ancora collegata. Questa pagina è un’anteprima.`)));
-  $('#orderQuote').addEventListener('click', () => { const f = $('#calc'); f.requestSubmit ? f.requestSubmit() : f.dispatchEvent(new Event('submit', { cancelable: true })); });
 
   // paint swatches (the 3D scene listens for 'paint')
   const PAINTS = [['Squadra blu', '#1E63FF'], ['Squadra arancione', '#FF6A1A'], ['Titanio', '#C9CDD3'], ['Grafite', '#2B2F37'], ['Viola', '#6C4CF5']];
@@ -772,27 +827,15 @@ footer p a{color:var(--ink);text-underline-offset:2px}
   roving($('#swatches'));
 
   // ---------- calculator ----------
-  // € per level climbed INTO each rank (Platino I → II is one level; each level has 4 in-game
-  // divisions). 2v2 piloted base; a list sets I, II, III separately.
-  // Market, Nov 2026 (NeuralBoost, Boosting Games, BuyBoosting, PlayHub, GG Clan):
-  //   Diamond I → Champion I $13.5–27, Champion I → GC I $28–42, GC I → SSL $80–105.
-  // Pitched low but sustainable: at or just above the cheapest sellers, well under the median.
-  const TIERS = [
-    ['Bronzo', '#D9A178', '#9A5B33', 1], ['Argento', '#E9EDF3', '#9AA5B8', 1.2], ['Oro', '#FFD978', '#D7961A', 1.6],
-    ['Platino', '#A8EEFF', '#3BA5CC', 2.4], ['Diamante', '#9DBBFF', '#3463E6', 4], ['Campione', '#D9B3FF', '#8048DE', 8],
-    ['Gran Campione', '#FF9EB1', '#D42953', [12, 16, 26]],
-  ];
+  // prices live in pricing.js, shared with the payment API
+  const PR = window.AerialPricing, RANKS = PR.RANKS, BUNDLE = PR.BUNDLE;
   const to = i => (RANKS[i].label[0] === 'A' ? 'ad ' : 'a ') + RANKS[i].label;   // "ad Argento"
-  const BUNDLE = { from: 6, off: 0.10 };   // 10% off orders of 6+ levels
-  const RANKS = [];
-  TIERS.forEach(([n, c1, c2, step], t) => ['I', 'II', 'III'].forEach((d, i) => RANKS.push({ label: `${n} ${d}`, c1, c2, step: Array.isArray(step) ? step[i] : step, tier: t })));
-  RANKS.push({ label: 'Leggenda Supersonica', c1: '#FFFFFF', c2: '#8E9BC4', step: 48, tier: 7 });
 
   const rFrom = $('#rFrom'), rTo = $('#rTo');
   const eur2 = new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' });
   const eur0 = new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0 });
   const money = v => (v < 100 ? eur2 : eur0).format(v);
-  let mult = 1, shown = 0, anim;
+  let shown = 0, anim;
   const ladder = $('#ladder'), ladderCells = RANKS.map((r, i) => {
     const c = document.createElement('i'); c.style.setProperty('--c1', r.c1); c.style.setProperty('--c2', r.c2);
     if (i % 3 === 0) c.dataset.t = ['B', 'A', 'O', 'P', 'D', 'C', 'GC', 'SSL'][r.tier];
@@ -823,26 +866,24 @@ footer p a{color:var(--ink);text-underline-offset:2px}
     }
     show($('#gFrom'), $('#nFrom'), rFrom, RANKS[a]);
     show($('#gTo'), $('#nTo'), rTo, RANKS[b]);
-    let base = 0, hours = 0;
-    for (let i = a; i < b; i++) { const r = RANKS[i + 1]; base += r.step; hours += r.tier === 7 ? 16 : 1.2 + r.tier * .8; }   // SSL is a long, slow climb
-    let extra = 0; $$('#calc input[type=checkbox]:checked').forEach(c => extra += +c.dataset.x);
-    const n = b - a, bundle = n >= BUNDLE.from, full = base * mult * (1 + extra);
-    tweenTo(full * (bundle ? 1 - BUNDLE.off : 1));
-    $('#was').textContent = bundle ? money(full) : '';
     const pl = $('#playlist button[aria-checked="true"]').textContent;
+    const extras = $$('#calc input[type=checkbox]:checked').map(c => c.dataset.key);
+    const { full, cents, levels: n, bundle, hours } = PR.boost({ from: a, to: b, playlist: pl, extras });
+    const final = cents / 100;
+    tweenTo(final);
+    $('#was').textContent = bundle ? money(full) : '';
     $('#route').textContent = `Da ${RANKS[a].label} ${to(b)} in ${pl}`;
     // boosters play about 10 hours a day; priority finishes ~25% sooner
     const h = hours * ($('#prio').checked ? 0.75 : 1);
     const when = h <= 12 ? `${Math.max(2, Math.round(h))}–${Math.round(h * 1.5) + 2} ore` : `${Math.ceil(h / 10)}–${Math.ceil(h / 10) + 1} giorni`;
     $('#eta').textContent = `${n} livell${n > 1 ? 'i' : 'o'}, circa ${when}`;
-    const final = full * (bundle ? 1 - BUNDLE.off : 1);
     $('#save').textContent = bundle ? `Risparmi ${money(full - final)}. Gli ordini da ${BUNDLE.from} livelli in su hanno il ${BUNDLE.off * 100}% di sconto.`
       : n === BUNDLE.from - 1 ? `Aggiungi un livello e tutto l’ordine ha il ${BUNDLE.off * 100}% di sconto.` : '';
     $('#save').classList.toggle('nudge', !bundle && n === BUNDLE.from - 1);
     // ladder: where you are, where you're going
     ladderCells.forEach((c, i) => { c.classList.toggle('in', i > a && i <= b); c.classList.toggle('from', i === a); c.classList.toggle('to', i === b); });
     // share the quote with the dock and the closing section; remember it for next visit
-    window.quote = { route: `Da ${RANKS[a].label} ${to(b)}`, pl, price: money(final) };
+    window.quote = { route: `Da ${RANKS[a].label} ${to(b)}`, pl, price: money(final), order: { kind: 'boost', from: a, to: b, playlist: pl, extras } };
     dispatchEvent(new CustomEvent('quote'));
     try { localStorage.setItem('aerial-quote', JSON.stringify({ a, b, pl: $$('button', $('#playlist')).findIndex(x => x.getAttribute('aria-checked') === 'true'), x: $$('#calc input[type=checkbox]').map(c => c.checked) })); } catch (e) {}
     if (src) dispatchEvent(new CustomEvent('calc'));
@@ -852,13 +893,13 @@ footer p a{color:var(--ink);text-underline-offset:2px}
   const seg = $('#playlist'), pill = seg.querySelector('i');
   $$('button', seg).forEach((b, i) => b.addEventListener('click', () => {
     $$('button', seg).forEach(x => x.setAttribute('aria-checked', x === b));
-    pill.style.transform = `translateX(${i * 100}%)`; mult = +b.dataset.m; calc(b);
+    pill.style.transform = `translateX(${i * 100}%)`; calc(b);
   }));
   pill.style.transform = 'translateX(100%)';
   $$('#calc input[type=checkbox]').forEach(c => c.addEventListener('change', () => calc(c)));
   // service cards preset the calculator, then scroll to it
   $$('[data-preset]').forEach(btn => btn.addEventListener('click', () => {
-    const duo = $('#calc input[data-x="0.35"]');
+    const duo = $('#calc input[data-key="duo"]');
     duo.checked = btn.dataset.preset === 'duo'; calc(duo);
     const el = $('#price');
     if (window.lenis) window.lenis.scrollTo(el, { duration: 1.6 }); else el.scrollIntoView({ behavior: 'smooth' });
@@ -874,13 +915,57 @@ footer p a{color:var(--ink);text-underline-offset:2px}
     $$('[data-goal]').forEach(x => x.classList.toggle('on', x === btn));
   }));
   rTo.addEventListener('input', () => $$('[data-goal]').forEach(x => x.classList.remove('on')));
-  $('#calc').addEventListener('submit', e => { e.preventDefault(); toast('Il pagamento non è ancora collegato. Questa pagina è un’anteprima.'); });
+  $('#calc').addEventListener('submit', e => {
+    e.preventDefault(); const q = window.quote;
+    openCheckout({ order: q.order, label: `Boost ${q.route.replace(/^Da /, 'da ')}, ${q.pl}`, price: q.price });
+  });
+  // ---------- checkout: order summary → Stripe or PayPal (the server re-prices everything) ----------
+  const co = $('#checkout'), coForm = $('#coForm'), coGo = $('#coGo'), coErr = $('#coErr');
+  let pending = null;
+  const closeCo = () => (co.close ? co.close() : co.removeAttribute('open'));
+  function openCheckout(p) {
+    pending = p;
+    $('#coItem').textContent = p.label; $('#coPrice').textContent = p.price;
+    coErr.textContent = ''; coGo.disabled = false; coGo.textContent = `Continua al pagamento · ${p.price}`;
+    try { if (!$('#coEmail').value) $('#coEmail').value = localStorage.getItem('aerial-email') || ''; } catch (e) {}
+    if (co.showModal) co.showModal(); else co.setAttribute('open', '');
+    ($('#coEmail').value ? $('#coEpic') : $('#coEmail')).focus();
+  }
+  $('#coClose').addEventListener('click', closeCo);
+  co.addEventListener('click', e => { if (e.target === co) closeCo(); });   // click on the backdrop
+  coForm.addEventListener('submit', async e => {
+    e.preventDefault();
+    const email = $('#coEmail'), epic = $('#coEpic'), consent = $('#coConsent');
+    const miss = !email.checkValidity() || !email.value.trim() ? [email, 'Inserisci un’email valida.']
+      : epic.value.trim().length < 3 ? [epic, 'Inserisci il tuo nome Epic Games.']
+      : !consent.checked ? [consent, 'Conferma di avere 18 anni o il consenso di un genitore.'] : null;
+    if (miss) { coErr.textContent = miss[1]; miss[0].focus(); return; }
+    coGo.disabled = true; coGo.textContent = 'Ti porto al pagamento…'; coErr.textContent = '';
+    try {
+      const r = await fetch('/api/checkout', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order: pending.order, email: email.value.trim(), epic: epic.value.trim(), method: new FormData(coForm).get('method'), consent: true }),
+      });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok || !d.url) throw new Error(d.error || '');
+      try { localStorage.setItem('aerial-email', email.value.trim()); } catch (e) {}
+      location.href = d.url;
+    } catch (err) {
+      coErr.textContent = err.message || 'Il pagamento non è disponibile in questo momento. Riprova tra poco.';
+      coGo.disabled = false; coGo.textContent = `Continua al pagamento · ${pending.price}`;
+    }
+  });
+  $$('[data-plan]').forEach(b => b.addEventListener('click', () => {
+    const plan = PR.COACHING[b.dataset.plan];
+    openCheckout({ order: { kind: 'coaching', plan: b.dataset.plan }, label: plan.label, price: eur0.format(plan.eur) });   // whole euros, as on the cards
+  }));
+  $('#orderQuote').addEventListener('click', () => { const f = $('#calc'); f.requestSubmit ? f.requestSubmit() : f.dispatchEvent(new Event('submit', { cancelable: true })); });
   // restore the last quote (picks up where the visitor left off)
   try {
     const q = JSON.parse(localStorage.getItem('aerial-quote') || 'null');
     if (q && q.b > q.a) {
       rFrom.value = q.a; rTo.value = q.b;
-      const btns = $$('button', $('#playlist')); if (btns[q.pl]) { btns.forEach(x => x.setAttribute('aria-checked', x === btns[q.pl])); pill.style.transform = `translateX(${q.pl * 100}%)`; mult = +btns[q.pl].dataset.m; }
+      const btns = $$('button', $('#playlist')); if (btns[q.pl]) { btns.forEach(x => x.setAttribute('aria-checked', x === btns[q.pl])); pill.style.transform = `translateX(${q.pl * 100}%)`; }
       $$('#calc input[type=checkbox]').forEach((c, i) => (c.checked = !!(q.x || [])[i]));
     }
   } catch (e) {}
