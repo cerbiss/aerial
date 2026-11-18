@@ -855,19 +855,34 @@ rig.add(key, key.target);
 const rimL = new THREE.DirectionalLight(0xdfe7ff, 1.1); rimL.position.set(-6, 4, -6); scene.add(rimL);
 scene.add(rig);
 
-/* ---------------- boost: flame jet + embers ----------------
-   Two nested flame shells with scrolling noise (white-hot core, orange
-   body), a glow at the nozzle, and short-lived embers. Normal blending,
-   so it reads on the light studio background.                          */
+/* ---------------- boost (Rocket League "Standard" style) ----------------
+   A short hot jet at the exhaust, then a stream of soft puffs that leave
+   the car, billow out and fade, like the in-game default boost. Colours
+   follow the paint, the way boost follows team colour in the game.      */
 const NOZ = new THREE.Vector3(0, 0.56, -2.32);
+const BOOST_COLORS = {                    // paint → core / body / smoke
+  '#1E63FF': ['#EAF6FF', '#2E8BFF', '#A9C2EE'],
+  '#FF6A1A': ['#FFF5D6', '#FF7A1A', '#EDB892'],
+  '#C9CDD3': ['#FFFFFF', '#E6EAF0', '#C3C9D3'],
+  '#2B2F37': ['#D5D9E0', '#454B57', '#6B717C'],
+  '#6C4CF5': ['#F2ECFF', '#8C66FF', '#BBAAEA'],
+};
+const bCore = new THREE.Color('#EAF6FF'), bBody = new THREE.Color('#2E8BFF'), bSmoke = new THREE.Color('#A9C2EE');
+const tCore = bCore.clone(), tBody = bBody.clone(), tSmoke = bSmoke.clone();
+function setBoostColors(hex) {
+  const c = BOOST_COLORS[(hex || '').toUpperCase()] || BOOST_COLORS['#FF6A1A'];
+  tCore.set(c[0]); tBody.set(c[1]); tSmoke.set(c[2]);
+}
+
+// --- hot jet at the nozzle ---
 const NOISE = `
   float h(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
   float n(vec2 p){ vec2 i = floor(p), f = fract(p); f = f*f*(3.0-2.0*f);
     return mix(mix(h(i), h(i+vec2(1,0)), f.x), mix(h(i+vec2(0,1)), h(i+vec2(1,1)), f.x), f.y); }`;
-function flameMaterial(inner) {
+const jetUniforms = { uTime: { value: 0 }, uBoost: { value: 0 }, uCore: { value: bCore }, uBody: { value: bBody } };
+function jetMaterial(inner) {
   return new THREE.ShaderMaterial({
-    transparent: true, depthWrite: false, side: THREE.DoubleSide,
-    uniforms: { uTime: { value: 0 }, uBoost: { value: 0 } },
+    transparent: true, depthWrite: false, side: THREE.DoubleSide, uniforms: jetUniforms,
     vertexShader: `
       varying vec2 vUv; varying float vFacing;
       void main(){
@@ -877,107 +892,114 @@ function flameMaterial(inner) {
         gl_Position = projectionMatrix * mv;
       }`,
     fragmentShader: `
-      uniform float uTime, uBoost; varying vec2 vUv; varying float vFacing;
+      uniform float uTime, uBoost; uniform vec3 uCore, uBody; varying vec2 vUv; varying float vFacing;
       ${NOISE}
       void main(){
-        float t = vUv.y;                                   // 0 at the nozzle, 1 at the tip
-        float flick = n(vec2(vUv.x * 7.0, t * 5.0 - uTime * 11.0)) * 0.6 + n(vec2(vUv.x * 15.0, t * 9.0 - uTime * 17.0)) * 0.4;
-        float body = 1.0 - smoothstep(${inner ? '0.25' : '0.35'}, 1.0, t + (flick - 0.5) * 0.45);
-        float edge = pow(vFacing, ${inner ? '0.7' : '1.5'});
-        ${inner
-          ? 'vec3 c = mix(vec3(1.0, 0.99, 0.94), vec3(1.0, 0.85, 0.42), smoothstep(0.0, 0.8, t));'
-          : 'vec3 c = mix(vec3(1.0, 0.80, 0.30), vec3(1.0, 0.43, 0.08), smoothstep(0.0, 0.45, t)); c = mix(c, vec3(0.92, 0.22, 0.12), smoothstep(0.5, 1.0, t));'}
-        float a = body * edge * uBoost * ${inner ? '1.0' : '0.88'};
+        float t = vUv.y;
+        float flick = n(vec2(vUv.x * 8.0, t * 6.0 - uTime * 14.0));
+        float body = 1.0 - smoothstep(${inner ? '0.2' : '0.3'}, 1.0, t + (flick - 0.5) * 0.5);
+        float edge = pow(vFacing, ${inner ? '0.6' : '1.3'});
+        vec3 c = ${inner ? 'mix(vec3(1.0), uCore, smoothstep(0.0, 0.6, t))' : 'mix(uCore, uBody, smoothstep(0.0, 0.5, t))'};
+        float a = body * edge * uBoost;
         if (a < 0.01) discard;
         gl_FragColor = vec4(c, a);
       }`
   });
 }
-function flameGeometry(len, r0, bulge) {
+function jetGeometry(len, r0, bulge) {
   const pts = [];
-  for (let i = 0; i <= 28; i++) {
-    const t = i / 28, r = (r0 + bulge * Math.sin(t * Math.PI * 0.9)) * Math.pow(1 - t, 0.6);
+  for (let i = 0; i <= 24; i++) {
+    const t = i / 24, r = (r0 + bulge * Math.sin(t * Math.PI * 0.8)) * Math.pow(1 - t, 0.7);
     pts.push(new THREE.Vector2(Math.max(0.002, r), -t * len));
   }
-  const g = new THREE.LatheGeometry(pts, 48);
-  g.rotateX(Math.PI / 2);                                  // flame points out of the back (−Z)
+  const g = new THREE.LatheGeometry(pts, 40);
+  g.rotateX(Math.PI / 2);                     // points out of the back (−Z)
   return g;
 }
-function glowTexture() {
-  const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d');
-  const g = x.createRadialGradient(64, 64, 0, 64, 64, 64);
-  g.addColorStop(0, 'rgba(255,240,210,1)'); g.addColorStop(.25, 'rgba(255,170,70,.75)'); g.addColorStop(1, 'rgba(255,110,30,0)');
-  x.fillStyle = g; x.fillRect(0, 0, 128, 128);
-  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
-}
-const outerMat = flameMaterial(false), innerMat = flameMaterial(true);
 const jet = new THREE.Group();
-const outerFlame = new THREE.Mesh(flameGeometry(1, 0.2, 0.12), outerMat); outerFlame.renderOrder = 2;
-const innerFlame = new THREE.Mesh(flameGeometry(0.55, 0.11, 0.035), innerMat); innerFlame.renderOrder = 3;
-const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTexture(), transparent: true, depthWrite: false, opacity: 0 }));
-glow.renderOrder = 4; glow.position.z = -0.05;
-jet.add(outerFlame, innerFlame, glow);
+const jetOuter = new THREE.Mesh(jetGeometry(1, 0.17, 0.06), jetMaterial(false)); jetOuter.renderOrder = 3;
+const jetInner = new THREE.Mesh(jetGeometry(0.6, 0.09, 0.02), jetMaterial(true)); jetInner.renderOrder = 4;
+jet.add(jetOuter, jetInner);
 jet.position.copy(NOZ);
 pivot.add(jet);
 
-// embers
-const N = 160;
+// --- puff trail ---
+function cloudTexture() {
+  const S = 128, c = document.createElement('canvas'); c.width = c.height = S; const x = c.getContext('2d');
+  // a lumpy puff: several soft blobs, lit from the top-left
+  const blobs = [[64, 64, 40], [46, 54, 26], [82, 50, 24], [56, 80, 24], [80, 78, 22], [64, 40, 20]];
+  blobs.forEach(([bx, by, r]) => {
+    const g = x.createRadialGradient(bx - r * .25, by - r * .25, 0, bx, by, r);
+    g.addColorStop(0, 'rgba(255,255,255,0.8)'); g.addColorStop(0.5, 'rgba(230,230,230,0.42)'); g.addColorStop(1, 'rgba(205,205,205,0)');
+    x.fillStyle = g; x.beginPath(); x.arc(bx, by, r, 0, Math.PI * 2); x.fill();
+  });
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+const N = 220;
 const fGeo = new THREE.BufferGeometry();
-const fPos = new Float32Array(N * 3), fLife = new Float32Array(N).fill(1), fSize = new Float32Array(N);
+const fPos = new Float32Array(N * 3), fLife = new Float32Array(N).fill(1), fSize = new Float32Array(N), fRot = new Float32Array(N);
 fGeo.setAttribute('position', new THREE.BufferAttribute(fPos, 3));
 fGeo.setAttribute('aLife', new THREE.BufferAttribute(fLife, 1));
 fGeo.setAttribute('aSize', new THREE.BufferAttribute(fSize, 1));
+fGeo.setAttribute('aRot', new THREE.BufferAttribute(fRot, 1));
 const fMat = new THREE.ShaderMaterial({
   transparent: true, depthWrite: false,
-  uniforms: { uScale: { value: 400 } },
+  uniforms: { uScale: { value: 400 }, uTex: { value: cloudTexture() }, uCore: { value: bCore }, uBody: { value: bBody }, uSmoke: { value: bSmoke } },
   vertexShader: `
-    attribute float aLife; attribute float aSize; varying float vLife; uniform float uScale;
-    void main(){ vLife = aLife; vec4 mv = modelViewMatrix * vec4(position,1.0);
-      gl_PointSize = aSize * uScale / -mv.z; gl_Position = projectionMatrix * mv; }`,
+    attribute float aLife, aSize, aRot; varying float vLife, vRot; uniform float uScale;
+    void main(){ vLife = aLife; vRot = aRot; vec4 mv = modelViewMatrix * vec4(position, 1.0);
+      gl_PointSize = min(aSize * uScale / -mv.z, 512.0); gl_Position = projectionMatrix * mv; }`,
   fragmentShader: `
-    varying float vLife;
+    uniform sampler2D uTex; uniform vec3 uCore, uBody, uSmoke; varying float vLife, vRot;
     void main(){
-      float d = length(gl_PointCoord - 0.5); if (d > 0.5) discard;
-      float soft = smoothstep(0.5, 0.1, d);
-      vec3 c = mix(vec3(1.0, 0.95, 0.72), vec3(1.0, 0.5, 0.12), smoothstep(0.0, 0.4, vLife));
-      c = mix(c, vec3(0.85, 0.2, 0.1), smoothstep(0.5, 1.0, vLife));
-      gl_FragColor = vec4(c, soft * (1.0 - vLife));
+      vec2 p = gl_PointCoord - 0.5; float c = cos(vRot), s = sin(vRot);
+      p = mat2(c, -s, s, c) * p;
+      vec4 tx = texture2D(uTex, p + 0.5);
+      vec3 col = mix(uCore, uBody, smoothstep(0.0, 0.16, vLife));
+      col = mix(col, uSmoke, smoothstep(0.2, 0.85, vLife));
+      col *= mix(0.86, 1.06, tx.r);                       // a little volume from the texture's lighting
+      float a = tx.a * smoothstep(0.0, 0.05, vLife) * (1.0 - smoothstep(0.45, 1.0, vLife));
+      if (a < 0.01) discard;
+      gl_FragColor = vec4(col, a * 0.85);
     }`
 });
-const embers = new THREE.Points(fGeo, fMat); embers.frustumCulled = false; embers.renderOrder = 5; scene.add(embers);
+// the trail lives in the car's own space, so it always streams straight out of the exhaust
+// however the layout moves or turns the car — no stray puffs left around the page
+const puffs = new THREE.Points(fGeo, fMat); puffs.frustumCulled = false; puffs.renderOrder = 2; pivot.add(puffs);
 const fVel = Array.from({ length: N }, () => new THREE.Vector3());
-const fMax = new Float32Array(N), fBase = new Float32Array(N);
+const fMax = new Float32Array(N), fBase = new Float32Array(N), fSpin = new Float32Array(N);
 let fAcc = 0, fI = 0;
-const back = new THREE.Vector3(), tmp = new THREE.Vector3(), jit = new THREE.Vector3();
+const back = new THREE.Vector3(), up = new THREE.Vector3(), tmp = new THREE.Vector3(), jit = new THREE.Vector3();
 function flameStep(dt, amt, s, t) {
-  // flame shells
-  const flick = 1 + Math.sin(t * 47) * 0.05 + Math.sin(t * 29.3) * 0.04;
+  // colours glide to the new paint's boost colours
+  const ck = 1 - Math.exp(-dt * 6);
+  bCore.lerp(tCore, ck); bBody.lerp(tBody, ck); bSmoke.lerp(tSmoke, ck);
+  // jet
+  const flick = 1 + Math.sin(t * 53) * 0.06 + Math.sin(t * 31.7) * 0.05;
   jet.visible = amt > 0.02;
-  jet.scale.set(0.7 + amt * 0.45, 0.7 + amt * 0.45, (0.35 + amt * 1.75) * flick);
-  outerMat.uniforms.uTime.value = innerMat.uniforms.uTime.value = t;
-  outerMat.uniforms.uBoost.value = innerMat.uniforms.uBoost.value = Math.min(1, amt * 1.4);
-  glow.material.opacity = Math.min(0.9, amt * 1.1);
-  glow.scale.setScalar(0.55 + amt * 0.55);
-  // embers
-  rig.updateMatrixWorld(true);
+  jet.scale.set(0.8 + amt * 0.3, 0.8 + amt * 0.3, (0.25 + amt * 0.75) * flick);
+  jetUniforms.uTime.value = t; jetUniforms.uBoost.value = Math.min(1, amt * 1.5);
+  // puffs leave the nozzle, billow and fall behind as if the car were flying forward
   fAcc += amt * 110 * dt;
-  back.set(0, 0, -1).transformDirection(pivot.matrixWorld);
+  back.set(0, 0, -1); up.set(0, 1, 0);
   while (fAcc >= 1) {
     fAcc -= 1; const i = fI; fI = (fI + 1) % N;
-    tmp.copy(NOZ); tmp.z -= 0.35 + Math.random() * 0.4; pivot.localToWorld(tmp);
+    tmp.copy(NOZ); tmp.z -= 0.12 + Math.random() * 0.18;
     fPos[i * 3] = tmp.x; fPos[i * 3 + 1] = tmp.y; fPos[i * 3 + 2] = tmp.z;
-    jit.set((Math.random() - .5) * .8, (Math.random() - .35) * .7, (Math.random() - .5) * .8).multiplyScalar(s);
-    fVel[i].copy(back).multiplyScalar((5 + Math.random() * 4) * s).add(jit);
-    fLife[i] = 0; fMax[i] = 0.22 + Math.random() * 0.35; fBase[i] = (0.045 + Math.random() * 0.06) * s;
+    jit.set((Math.random() - .5) * .3, (Math.random() - .5) * .3, (Math.random() - .5) * .3);
+    fVel[i].copy(back).multiplyScalar((6.5 + Math.random() * 2.5) * (0.6 + amt * 0.4)).add(jit);
+    fLife[i] = 0; fMax[i] = 0.6 + Math.random() * 0.4;
+    fBase[i] = (0.26 + Math.random() * 0.14) * s; fRot[i] = Math.random() * 6.283; fSpin[i] = (Math.random() - .5) * 1.5;
   }
   for (let i = 0; i < N; i++) {
     if (fLife[i] >= 1) continue;
     fLife[i] = Math.min(1, fLife[i] + dt / fMax[i]);
     fPos[i * 3] += fVel[i].x * dt; fPos[i * 3 + 1] += fVel[i].y * dt; fPos[i * 3 + 2] += fVel[i].z * dt;
-    fVel[i].multiplyScalar(Math.pow(0.3, dt)); fVel[i].y -= 1.2 * dt * s;
-    fSize[i] = fBase[i] * (1.0 - fLife[i] * 0.5);
+    fVel[i].multiplyScalar(Math.pow(0.2, dt)); fVel[i].addScaledVector(up, 0.3 * dt);
+    fSize[i] = fBase[i] * (0.4 + 1.2 * Math.sqrt(fLife[i]));
+    fRot[i] += fSpin[i] * dt;
   }
-  fGeo.attributes.position.needsUpdate = fGeo.attributes.aLife.needsUpdate = fGeo.attributes.aSize.needsUpdate = true;
+  ['position', 'aLife', 'aSize', 'aRot'].forEach(k => (fGeo.attributes[k].needsUpdate = true));
 }
 
 /* ---------------- model loading ---------------- */
@@ -1130,7 +1152,7 @@ const endDrag = () => { drag.on = false; zone.classList.remove('dragging'); };
 zone.addEventListener('pointerup', endDrag); zone.addEventListener('pointercancel', endDrag);
 
 let kick = 0;   // a short "rev": paint change, price change
-addEventListener('paint', e => { paintTarget.set(e.detail); kick = 1; });
+addEventListener('paint', e => { paintTarget.set(e.detail); setBoostColors(e.detail); kick = 1; });
 let age = 0;
 addEventListener('calc', () => { kick = Math.max(kick, 0.6); });
 
